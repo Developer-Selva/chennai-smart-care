@@ -139,4 +139,16 @@ defineProps({
   services:        { type: Array,  default: () => [] },
   otherCategories: { type: Array,  default: () => [] },
 })
+
+injectJsonLd('schema-service', {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": category.name + " Repair in Chennai",
+  "provider": { "@type": "LocalBusiness", "name": "Chennai Smart Care" },
+  "areaServed": "Chennai",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": category.name + " Services"
+  }
+})
 </script>

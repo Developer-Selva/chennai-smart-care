@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YL3P0MHJK3"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YL3P0MHJK3');
+    </script>
+
     {{-- SEO: Title managed by Inertia Head component in Vue --}}
     <title inertia>{{ config('app.name', 'Chennai Smart Care') }}</title>
 
@@ -19,7 +29,7 @@
     <meta property="og:url"         content="{{ url()->current() }}" />
     <meta property="og:title"       content="{{ config('app.name') }}" />
     <meta property="og:description" content="Expert appliance repair in Chennai — AC, Refrigerator, Washing Machine." />
-    <meta property="og:image"       content="{{ asset('images/og-default.jpg') }}" />
+    <meta property="og:image"       content="{{ asset('images/ac-washing-machine-refrigerator-service-repair-in-chennai.jpg') }}" />
 
     {{-- Twitter Card --}}
     <meta name="twitter:card"        content="summary_large_image" />
