@@ -87,7 +87,7 @@
              class="block text-center bg-white text-blue-700 font-bold py-3 rounded-xl hover:bg-blue-50 transition-colors">
             Book {{ category.name }} Service
           </a>
-          <a :href="`tel:+919876543210`"
+          <a :href="`tel:+919444900470`"
              class="block text-center mt-3 border border-white/40 text-white font-semibold py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm">
             📞 Call Us Instead
           </a>

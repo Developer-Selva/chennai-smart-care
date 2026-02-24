@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             'email'    => 'admin@chennaismarcare.in',
             'password' => Hash::make('Admin@123!'),
             'role'     => 'super_admin',
-            'phone'    => '9876543210',
+            'phone'    => '9444900470',
         ]);
 
         // ---- Service Categories ----

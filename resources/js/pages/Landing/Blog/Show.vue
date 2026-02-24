@@ -137,7 +137,7 @@
                class="block w-full text-center bg-white text-blue-700 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-50 transition-colors">
               Book Now →
             </a>
-            <a href="tel:+919876543210"
+            <a href="tel:+919444900470"
                class="block w-full text-center border border-white/40 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-white/10 transition-colors mt-2">
               📞 Call Us
             </a>

@@ -97,7 +97,7 @@
             <p class="mt-4 text-blue-200 text-sm flex items-center gap-2">
               <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
               Or call us:
-              <a href="tel:+919876543210" class="text-white font-semibold hover:underline">+91 94449 00470</a>
+              <a href="tel:+919444900470" class="text-white font-semibold hover:underline">+91 94449 00470</a>
             </p>
           </div>
 
@@ -272,7 +272,7 @@
                   class="inline-flex items-center justify-center gap-2 bg-white text-blue-700 px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
             Request Free Consultation
           </button>
-          <a href="https://wa.me/919876543210" target="_blank" rel="noopener"
+          <a href="https://wa.me/919444900470" target="_blank" rel="noopener"
              class="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all">
             <WhatsAppIcon size="sm" />
             Chat on WhatsApp
@@ -419,7 +419,7 @@
 
     <!-- Emergency CTA -->
     <div class="fixed bottom-6 right-6 z-50 animate-bounce-slow">
-      <a href="tel:+919876543210"
+      <a href="tel:+919444900470"
          class="flex items-center gap-2 bg-red-600 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all hover:bg-red-700">
         <PhoneIcon class="w-5 h-5 animate-pulse" />
         <span class="font-semibold">Emergency?</span>
@@ -535,7 +535,7 @@ onMounted(() => {
     "name": "Chennai Smart Care",
     "description": "Expert AC, Refrigerator and Washing Machine repair service in Chennai with certified technicians and 30-day service warranty.",
     "url": "https://chennaismartcare.com",
-    "telephone": "+919876543210",
+    "telephone": "+919444900470",
     "priceRange": "₹₹",
     "openingHours": "Mo-Su 09:00-21:00",
     "address": {

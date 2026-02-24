@@ -158,7 +158,7 @@ const contactInfo = [
     title: 'Phone',
     value: '+91 94449 00470',
     type: 'link',
-    link: 'tel:+919876543210',
+    link: 'tel:+919444900470',
     subtext: 'Available 9AM - 9PM'
   },
   {

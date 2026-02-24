@@ -34,7 +34,7 @@
         "name": "Chennai Smart Care",
         "description": "Expert AC, Refrigerator and Washing Machine repair services in Chennai",
         "url": "{{ config('app.url') }}",
-        "telephone": "{{ config('app.support_phone', '+91-9876543210') }}",
+        "telephone": "{{ config('app.support_phone', '+91-9444900470') }}",
         "priceRange": "₹₹",
         "image": "{{ asset('images/logo.png') }}",
         "address": {
@@ -110,7 +110,7 @@
     @inertia
 
     {{-- WhatsApp Floating Button --}}
-    <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.support_phone', '919876543210')) }}?text=Hi%20Chennai%20Smart%20Care%2C%20I%20need%20appliance%20repair%20help"
+    <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.support_phone', '919444900470')) }}?text=Hi%20Chennai%20Smart%20Care%2C%20I%20need%20appliance%20repair%20help"
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Chat with us on WhatsApp"

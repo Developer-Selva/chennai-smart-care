@@ -20,7 +20,7 @@
           </div>
           <div>
             <label class="label">Phone *</label>
-            <input v-model="form.phone" type="tel" class="input" placeholder="9876543210" />
+            <input v-model="form.phone" type="tel" class="input" placeholder="9444900470" />
             <p v-if="form.errors.phone" class="err">{{ form.errors.phone }}</p>
           </div>
           <div class="sm:col-span-2">

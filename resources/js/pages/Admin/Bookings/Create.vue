@@ -29,7 +29,7 @@
             <label class="label">Phone Number *</label>
             <div class="flex">
               <span class="prefix">+91</span>
-              <input v-model="form.guest_phone" type="tel" maxlength="10" class="input rounded-l-none" placeholder="9876543210" />
+              <input v-model="form.guest_phone" type="tel" maxlength="10" class="input rounded-l-none" placeholder="9444900470" />
             </div>
             <p v-if="errors.guest_phone" class="err">{{ errors.guest_phone }}</p>
           </div>
