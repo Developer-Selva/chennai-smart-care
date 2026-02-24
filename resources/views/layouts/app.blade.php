@@ -8,7 +8,7 @@
 
     {{-- SEO Meta Tags (overrideable via Inertia shared props) --}}
     <title inertia>{{ config('app.name', 'Chennai Smart Care') }}</title>
-    <meta name="description" content="@yield('meta_description', 'Expert AC, Refrigerator & Washing Machine repair service in Chennai. Same-day service, certified technicians, 30-day warranty.')" />
+    <meta name="description" content="@yield('meta_description', 'Expert AC, Refrigerator & Washing Machine repair service in Chennai. Same-day service, certified technicians, 6-Month warranty.')" />
     <meta name="keywords" content="@yield('meta_keywords', 'AC repair Chennai, refrigerator repair Chennai, washing machine repair Chennai, appliance repair')" />
     <meta name="robots" content="@yield('robots', 'index, follow')" />
     <link rel="canonical" href="@yield('canonical', url()->current())" />

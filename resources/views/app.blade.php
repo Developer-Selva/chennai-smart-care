@@ -9,7 +9,7 @@
     <title inertia>{{ config('app.name', 'Chennai Smart Care') }}</title>
 
     {{-- Default SEO meta (overridden per-page via Inertia <Head>) --}}
-    <meta name="description" content="Expert AC, Refrigerator & Washing Machine repair service in Chennai. Same-day service, certified technicians, 30-day warranty. Book online now!" />
+    <meta name="description" content="Expert AC, Refrigerator & Washing Machine repair service in Chennai. Same-day service, certified technicians, 6-Month warranty. Book online now!" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="{{ url()->current() }}" />
 

@@ -17,7 +17,7 @@
           </div>
           <p class="text-gray-400 text-sm leading-relaxed mb-4">
             Expert AC, Refrigerator & Washing Machine repair in Chennai.
-            Certified technicians, transparent pricing, 30-day warranty.
+            Certified technicians, transparent pricing, 6-Month warranty.
           </p>
           <div class="flex items-center gap-3">
             <a href="#" class="w-8 h-8 bg-gray-700 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors" aria-label="Facebook">

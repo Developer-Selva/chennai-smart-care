@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <Head>
       <title>{{ category.name }} Repair in Chennai — Chennai Smart Care</title>
-      <meta name="description" :content="`Expert ${category.name} repair in Chennai. Certified technicians, same-day service, 30-day warranty. Book online now!`" />
+      <meta name="description" :content="`Expert ${category.name} repair in Chennai. Certified technicians, same-day service, 6-Month warranty. Book online now!`" />
     </Head>
     <AppHeader />
 
@@ -19,7 +19,7 @@
           <div class="flex flex-wrap gap-3 mt-4">
             <span class="bg-white/10 text-white text-sm px-3 py-1 rounded-full border border-white/20">✅ Certified Technicians</span>
             <span class="bg-white/10 text-white text-sm px-3 py-1 rounded-full border border-white/20">⚡ Same-Day Service</span>
-            <span class="bg-white/10 text-white text-sm px-3 py-1 rounded-full border border-white/20">🛡️ 30-Day Warranty</span>
+            <span class="bg-white/10 text-white text-sm px-3 py-1 rounded-full border border-white/20">🛡️ 6-Month Warranty</span>
           </div>
         </div>
       </div>
@@ -99,7 +99,7 @@
           <ul class="space-y-3 text-sm text-gray-600">
             <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Background-verified certified technicians</li>
             <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Transparent pricing — no surprises</li>
-            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> 30-day service warranty on all repairs</li>
+            <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> 6-Month service warranty on all repairs</li>
             <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> Same-day & weekend appointments</li>
             <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5">✓</span> All major brands serviced</li>
           </ul>

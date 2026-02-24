@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <Head>
       <title>AC, Fridge & Washing Machine Repair in Chennai | Chennai Smart Care</title>
-      <meta name="description" content="Top-rated AC, Refrigerator & Washing Machine repair in Chennai — Porur, Vadapalani, Maduravoyal, Koyambedu, Valasaravakkam, Guindy. Certified technicians, same-day service, 30-day warranty. ☎ +91 94449 00470" />
+      <meta name="description" content="Top-rated AC, Refrigerator & Washing Machine repair in Chennai — Porur, Vadapalani, Maduravoyal, Koyambedu, Valasaravakkam, Guindy. Certified technicians, same-day service, 6-Month warranty. ☎ +91 94449 00470" />
       <meta name="keywords" content="AC repair Chennai, refrigerator repair Chennai, washing machine repair Chennai, AC repair Porur, AC repair Vadapalani, AC repair Koyambedu, appliance repair Chennai, home appliance service Chennai" />
       <meta name="robots" content="index, follow" />
       <meta name="geo.region" content="IN-TN" />
@@ -11,10 +11,11 @@
 
       <!-- Open Graph -->
       <meta property="og:title" content="Chennai Smart Care — Expert Appliance Repair in Chennai" />
-      <meta property="og:description" content="Same-day AC, Refrigerator & Washing Machine repair across Chennai. Certified techs, transparent pricing, 30-day warranty." />
+      <meta property="og:description" content="Same-day AC, Refrigerator & Washing Machine repair across Chennai. Certified techs, transparent pricing, 6-Month warranty." />
       <meta property="og:type" content="website" />
       <meta property="og:url" content="https://chennaismartcare.com/" />
       <meta property="og:locale" content="en_IN" />
+      <meta property="og:image" content="https://chennaismartcare.com/images/ac-washing-machine-refrigerator-service-repair-in-chennai.jpg">
     </Head>
 
     <AppHeader />
@@ -67,7 +68,7 @@
             <p class="mt-5 text-lg sm:text-xl text-blue-100 leading-relaxed max-w-lg">
               Certified technicians for <strong class="text-white">AC, Refrigerator & Washing Machine</strong> repair.
               <span class="font-semibold text-white">Same-day service</span>, transparent pricing,
-              and a <span class="font-semibold text-white">30-day service warranty</span>.
+              and a <span class="font-semibold text-white">6-Month service warranty</span>.
             </p>
 
             <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -468,7 +469,13 @@ const serviceAreas = [
   { name: 'Maduravoyal',     slug: 'ac', icon: '🏡', tagline: 'Doorstep service',       services: ['AC', 'Fridge', 'Washing Machine'] },
   { name: 'Koyambedu',       slug: 'ac', icon: '🛒', tagline: 'Available all week',     services: ['AC', 'Fridge', 'Washing Machine'] },
   { name: 'Valasaravakkam',  slug: 'ac', icon: '🏠', tagline: 'Same-day slots',         services: ['AC', 'Fridge', 'Washing Machine'] },
-  { name: 'Guindy',          slug: 'ac', icon: '🏢', tagline: '30-day warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
+  { name: 'Guindy',          slug: 'ac', icon: '🏢', tagline: '6-Month warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
+  { name: 'Mangadu',         slug: 'ac', icon: '🏢', tagline: '6-Month warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
+  { name: 'Kovur',         slug: 'ac', icon: '🏠', tagline: '6-Month warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
+  { name: 'Annanagar',         slug: 'ac', icon: '🛒', tagline: '6-Month warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
+  { name: 'Korattur, Kolathur, Rettery',         slug: 'ac', icon: '🏡', tagline: '6-Month warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
+  { name: 'Thiruvergadu, Pammal, Pallabaram',         slug: 'ac', icon: '🏙️', tagline: '6-Month warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
+  { name: 'Thambaram, Kundarthur, Mugalivakkam',         slug: 'ac', icon: '🏘️', tagline: '6-Month warranty',        services: ['AC', 'Fridge', 'Washing Machine'] },
 ]
 
 const matrixServices = ['AC Repair', 'Refrigerator', 'Washing Machine', 'Microwave']
@@ -477,7 +484,7 @@ const matrixServices = ['AC Repair', 'Refrigerator', 'Washing Machine', 'Microwa
 const faqs = reactive([
   { q: 'How quickly can you send a technician in Chennai?', a: 'We offer same-day service across all Chennai areas — Porur, Vadapalani, Koyambedu, Guindy, Valasaravakkam and Maduravoyal. Book before 2 PM for a same-day slot.', open: false },
   { q: 'What is the service charge for AC repair in Chennai?', a: 'AC repair starts from ₹299 for basic service. All prices are transparent — you get a full estimate before we begin any work. No hidden charges.', open: false },
-  { q: 'Do you offer a warranty on appliance repairs?', a: 'Yes. All repairs come with a 30-day service warranty. If the same issue recurs within 30 days, we fix it free of charge.', open: false },
+  { q: 'Do you offer a warranty on appliance repairs?', a: 'Yes. All repairs come with a 6-Month service warranty. If the same issue recurs within 30 days, we fix it free of charge.', open: false },
   { q: 'Which areas in Chennai do you serve?', a: 'We serve all major Chennai areas including Porur, Vadapalani, Maduravoyal, Koyambedu, Valasaravakkam, Guindy, Anna Nagar, T. Nagar, Velachery and more.', open: false },
   { q: 'Do you service all appliance brands?', a: 'Yes — LG, Samsung, Voltas, Daikin, Hitachi, Whirlpool, IFB, Bosch, Godrej and all other major brands. Our technicians are brand-certified.', open: false },
   { q: 'Can I book a service on weekends?', a: 'Absolutely. We operate 7 days a week, 9 AM to 9 PM including Sundays and public holidays.', open: false },
@@ -486,7 +493,7 @@ const faqs = reactive([
 // --- Static content ---
 const trustBadges = [
   { text: 'Certified Technicians' },
-  { text: '30-Day Warranty'       },
+  { text: '6-Month Warranty'       },
   { text: 'Same-Day Service'      },
   { text: 'Transparent Pricing'   },
 ]
@@ -502,7 +509,7 @@ const heroStats = [
   { value: '10,000+', label: 'Repairs Done'   },
   { value: '4.9★',   label: 'Google Rating'  },
   { value: '30 min',  label: 'Avg Response'   },
-  { value: '30-Day',  label: 'Warranty'       },
+  { value: '6-Month',  label: 'Warranty'       },
 ]
 
 const steps = [
@@ -533,7 +540,7 @@ onMounted(() => {
     "@type": "LocalBusiness",
     "@id": "https://chennaismartcare.com/#business",
     "name": "Chennai Smart Care",
-    "description": "Expert AC, Refrigerator and Washing Machine repair service in Chennai with certified technicians and 30-day service warranty.",
+    "description": "Expert AC, Refrigerator and Washing Machine repair service in Chennai with certified technicians and 6-Month service warranty.",
     "url": "https://chennaismartcare.com",
     "telephone": "+919444900470",
     "priceRange": "₹₹",
@@ -590,7 +597,7 @@ onMounted(() => {
       {
         "@type": "Question",
         "name": "Do you offer a warranty on repairs?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Yes, all repairs come with a 30-day service warranty. Same issue within 30 days? We fix it free."}
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes, all repairs come with a 6-Month service warranty. Same issue within 30 days? We fix it free."}
       },
       {
         "@type": "Question",

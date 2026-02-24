@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'color'            => '#8B5CF6',
             'sort_order'       => 3,
             'meta_title'       => 'Washing Machine Repair in Chennai | Front Load & Top Load',
-            'meta_description' => 'Best washing machine repair service in Chennai. Same-day service, genuine spare parts, 30-day warranty.',
+            'meta_description' => 'Best washing machine repair service in Chennai. Same-day service, genuine spare parts, 6-Month warranty.',
         ]);
 
         $microwave = ServiceCategory::create([

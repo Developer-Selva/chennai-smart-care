@@ -132,7 +132,7 @@
           <!-- Sticky CTA -->
           <div class="bg-blue-600 rounded-2xl p-5 text-white sticky top-20">
             <p class="font-bold text-lg mb-1">Book a Repair</p>
-            <p class="text-blue-100 text-xs mb-4">Expert service, 30-day warranty, transparent pricing.</p>
+            <p class="text-blue-100 text-xs mb-4">Expert service, 6-Month warranty, transparent pricing.</p>
             <a href="/quick-booking"
                class="block w-full text-center bg-white text-blue-700 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-50 transition-colors">
               Book Now →
