@@ -129,26 +129,72 @@
 </template>
 
 <script setup>
+import { onMounted, onUnmounted } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import AppHeader from '@/components/Landing/AppHeader.vue'
 import AppFooter from '@/components/Landing/AppFooter.vue'
 import { ClockIcon, ShieldCheckIcon, WrenchScrewdriverIcon } from '@heroicons/vue/24/outline'
 
-defineProps({
+const props = defineProps({
   category:        { type: Object, required: true },
   services:        { type: Array,  default: () => [] },
   otherCategories: { type: Array,  default: () => [] },
 })
 
-injectJsonLd('schema-service', {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": category.name + " Repair in Chennai",
-  "provider": { "@type": "LocalBusiness", "name": "Chennai Smart Care" },
-  "areaServed": "Chennai",
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": category.name + " Services"
-  }
+function injectJsonLd(id, data) {
+  const el = document.createElement('script')
+  el.type = 'application/ld+json'
+  el.id = id
+  el.textContent = JSON.stringify(data)
+  document.head.appendChild(el)
+}
+function removeJsonLd(id) {
+  document.getElementById(id)?.remove()
+}
+
+onMounted(() => {
+  injectJsonLd('schema-service', {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": props.category.name + " Repair in Chennai",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Chennai Smart Care",
+      "url": "https://chennaismartcare.com"
+    },
+    "areaServed": [
+      "Chennai", "Porur", "Vadapalani", "Koyambedu",
+      "Guindy", "Valasaravakkam", "Maduravoyal"
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": props.category.name + " Services",
+      "itemListElement": props.services.map(s => ({
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": s.name,
+          "description": s.description ?? ''
+        },
+        "price": s.effective_price ?? s.base_price,
+        "priceCurrency": "INR"
+      }))
+    }
+  })
+
+  injectJsonLd('schema-breadcrumb', {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home",     "item": "https://chennaismartcare.com" },
+      { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://chennaismartcare.com/services" },
+      { "@type": "ListItem", "position": 3, "name": props.category.name, "item": "https://chennaismartcare.com/services/" + props.category.slug }
+    ]
+  })
+})
+
+onUnmounted(() => {
+  removeJsonLd('schema-service')
+  removeJsonLd('schema-breadcrumb')
 })
 </script>
