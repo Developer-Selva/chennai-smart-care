@@ -13,7 +13,7 @@ warn() { echo -e "${YELLOW}[!] $1${NC}"; }
 step() { echo -e "\n${BLUE}━━━ $1 ━━━${NC}"; }
 
 APP_DIR="/var/www/smartcare"
-REPO_URL="https://github.com/YOUR_USERNAME/chennai-smart-care.git"  # ← Update this
+REPO_URL="https://github.com/Developer-Selva/chennai-smart-care.git"  # ← Update this
 BRANCH="main"
 FRESH=${1:-""}
 
