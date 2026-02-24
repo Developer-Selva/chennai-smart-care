@@ -156,6 +156,7 @@ class DatabaseSeeder extends Seeder
             BlogCategory::create(['name' => 'AC Repair Tips', 'slug' => 'ac-repair-tips']),
             BlogCategory::create(['name' => 'Refrigerator Care', 'slug' => 'refrigerator-care']),
             BlogCategory::create(['name' => 'Washing Machine Guide', 'slug' => 'washing-machine-guide']),
+            BlogCategory::create(['name' => 'Microwave Oven Service', 'slug' => 'microwave-oven-repair-chennai']),
         ];
 
         // ---- Sample Blog Posts ----
