@@ -15,11 +15,11 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="label">Support Phone</label>
-            <input v-model="form.support_phone" type="text" class="input" placeholder="+91 98765 43210" />
+            <input v-model="form.support_phone" type="text" class="input" placeholder="+91 94449 00470" />
           </div>
           <div>
             <label class="label">WhatsApp Number</label>
-            <input v-model="form.whatsapp_number" type="text" class="input" placeholder="+91 98765 43210" />
+            <input v-model="form.whatsapp_number" type="text" class="input" placeholder="+91 94449 00470" />
           </div>
         </div>
       </div>

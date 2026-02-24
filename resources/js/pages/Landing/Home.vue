@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <Head>
       <title>AC, Fridge & Washing Machine Repair in Chennai | Chennai Smart Care</title>
-      <meta name="description" content="Top-rated AC, Refrigerator & Washing Machine repair in Chennai — Porur, Vadapalani, Maduravoyal, Koyambedu, Valasaravakkam, Guindy. Certified technicians, same-day service, 30-day warranty. ☎ +91 98765 43210" />
+      <meta name="description" content="Top-rated AC, Refrigerator & Washing Machine repair in Chennai — Porur, Vadapalani, Maduravoyal, Koyambedu, Valasaravakkam, Guindy. Certified technicians, same-day service, 30-day warranty. ☎ +91 94449 00470" />
       <meta name="keywords" content="AC repair Chennai, refrigerator repair Chennai, washing machine repair Chennai, AC repair Porur, AC repair Vadapalani, AC repair Koyambedu, appliance repair Chennai, home appliance service Chennai" />
       <meta name="robots" content="index, follow" />
       <meta name="geo.region" content="IN-TN" />
@@ -97,7 +97,7 @@
             <p class="mt-4 text-blue-200 text-sm flex items-center gap-2">
               <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
               Or call us:
-              <a href="tel:+919876543210" class="text-white font-semibold hover:underline">+91 98765 43210</a>
+              <a href="tel:+919876543210" class="text-white font-semibold hover:underline">+91 94449 00470</a>
             </p>
           </div>
 

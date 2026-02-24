@@ -156,7 +156,7 @@ const contactInfo = [
   {
     icon: PhoneIcon,
     title: 'Phone',
-    value: '+91 98765 43210',
+    value: '+91 94449 00470',
     type: 'link',
     link: 'tel:+919876543210',
     subtext: 'Available 9AM - 9PM'

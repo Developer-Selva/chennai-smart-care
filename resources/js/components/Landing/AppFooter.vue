@@ -7,8 +7,12 @@
 
         <!-- Brand -->
         <div class="sm:col-span-2 lg:col-span-1">
-          <div class="flex items-center gap-2.5 mb-4">
-            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-extrabold text-sm">SC</div>
+          <div class="mb-4">
+            <img
+              src="/images/logo.png"
+              alt="Chennai Smart Care — Expert Appliance Repair"
+              class="h-20 w-auto object-contain"
+            />
             <span class="font-extrabold text-lg">Chennai Smart Care</span>
           </div>
           <p class="text-gray-400 text-sm leading-relaxed mb-4">
@@ -55,7 +59,7 @@
           <ul class="space-y-3">
             <li class="flex items-start gap-2.5">
               <PhoneIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <a href="tel:+919876543210" class="text-gray-400 hover:text-white text-sm transition-colors">+91 98765 43210</a>
+              <a href="tel:+919876543210" class="text-gray-400 hover:text-white text-sm transition-colors">+91 94449 00470</a>
             </li>
             <li class="flex items-start gap-2.5">
               <EnvelopeIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />

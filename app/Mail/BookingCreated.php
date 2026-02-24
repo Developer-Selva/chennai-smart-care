@@ -35,7 +35,7 @@ class BookingCreated extends Mailable
                 'address'      => $this->booking->address,
                 'trackUrl'     => route('booking.track', $this->booking->booking_number),
                 'bookingUrl'   => route('quick-booking'),
-                'phone'        => config('app.support_phone', '+91 98765 43210'),
+                'phone'        => config('app.support_phone', '+91 94449 00470'),
             ],
         );
     }

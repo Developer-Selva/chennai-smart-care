@@ -7,12 +7,11 @@
       <div class="flex items-center justify-between h-16">
 
         <!-- Logo -->
-        <a href="/" class="flex items-center gap-2.5 flex-shrink-0">
-          <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-extrabold text-white text-sm shadow-sm">SC</div>
-          <div class="leading-tight">
-            <span :class="['font-extrabold text-base tracking-tight block', scrolled || minimal ? 'text-gray-900' : 'text-white']">Chennai Smart Care</span>
-            <span :class="['text-xs hidden sm:block', scrolled || minimal ? 'text-gray-400' : 'text-blue-200']">Expert Appliance Repair</span>
-          </div>
+        <a href="/" class="flex items-center flex-shrink-0">
+          <img
+            src="/images/logo.png"
+            alt="Chennai Smart Care — Expert Appliance Repair"
+            class="h-20 w-auto object-contain transition-all duration-200"/>
         </a>
 
         <!-- Desktop Nav -->
@@ -161,7 +160,7 @@ const scrolled     = ref(false)
 const mobileOpen   = ref(false)
 const userMenuOpen = ref(false)
 const userMenuRef  = ref(null)
-const phone        = '+91 98765 43210'
+const phone        = '+91 94449 00470'
 
 const firstName    = computed(() => authUser.value?.name?.split(' ')[0] ?? '')
 const userInitials = computed(() => {
