@@ -62,7 +62,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import axios from 'axios'
+import { router } from '@inertiajs/vue3'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -72,10 +72,10 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'rescheduled'])
 
-const form      = ref({ date: '', time_slot: '', note: '' })
-const submitting = ref(false)
-const error      = ref('')
-const today      = new Date().toISOString().split('T')[0]
+const form       = ref({ date: '', time_slot: '', note: '' })
+const submitting  = ref(false)
+const error       = ref('')
+const today       = new Date().toISOString().split('T')[0]
 
 const slots = [
   { value: '09:00-11:00', label: '9:00 – 11:00 AM' },
@@ -88,18 +88,24 @@ const slots = [
 
 const canSubmit = computed(() => form.value.date && form.value.time_slot)
 
-async function submit() {
-  error.value     = ''
-  submitting.value = true
-  try {
-    await axios.patch(`/admin/bookings/${props.bookingId}/reschedule`, form.value)
-    emit('rescheduled')
-    form.value = { date: '', time_slot: '', note: '' }
-  } catch (e) {
-    error.value = e.response?.data?.message ?? 'Something went wrong.'
-  } finally {
-    submitting.value = false
-  }
+function submit() {
+  error.value      = ''
+  submitting.value  = true
+  router.patch(
+    `/admin/bookings/${props.bookingId}/reschedule`,
+    form.value,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        emit('rescheduled')
+        form.value = { date: '', time_slot: '', note: '' }
+      },
+      onError: (errors) => {
+        error.value = Object.values(errors)[0] ?? 'Something went wrong.'
+      },
+      onFinish: () => { submitting.value = false },
+    }
+  )
 }
 </script>
 

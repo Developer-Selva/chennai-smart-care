@@ -4,6 +4,16 @@ import { createPinia } from 'pinia'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import '../css/app.css'
 import { ZiggyVue } from 'ziggy-js'
+import axios from 'axios'
+
+// ── Axios global setup ──────────────────────────────────────
+
+axios.defaults.headers.common['X-CSRF-TOKEN'] =
+    document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? ''
+
+axios.defaults.withCredentials = true
+
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Chennai Smart Care'
 

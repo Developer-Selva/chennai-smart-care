@@ -222,15 +222,14 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
-import axios from 'axios'
 import {
   ArrowLeftIcon, CalendarIcon, ClockIcon,
   CheckIcon, CheckCircleIcon, UserIcon,
 } from '@heroicons/vue/24/outline'
-import AdminLayout    from '@/components/Admin/AdminLayout.vue'
-import StatusBadge    from '@/components/Shared/StatusBadge.vue'
+import AdminLayout     from '@/components/Admin/AdminLayout.vue'
+import StatusBadge     from '@/components/Shared/StatusBadge.vue'
 import RescheduleModal from '@/components/Admin/Modals/RescheduleModal.vue'
-import CancelModal    from '@/components/Admin/Modals/CancelModal.vue'
+import CancelModal     from '@/components/Admin/Modals/CancelModal.vue'
 
 const props = defineProps({
   booking:     { type: Object, required: true },
@@ -248,29 +247,30 @@ const canAssign = computed(() =>
   !['completed', 'cancelled'].includes(props.booking.status)
 )
 
-// All action URLs use plain string paths — no route() helper needed
-const base = computed(() => `/admin/bookings/${props.booking.id}`)
+// Explicit URL builder — no computed base that could lose the action segment
+function actionUrl(action) {
+  return `/admin/bookings/${props.booking.id}/${action}`
+}
 
-async function doAction(action, payload = {}) {
+// Use Inertia router.patch — handles CSRF token automatically, no axios needed
+function doAction(action, data = {}) {
   actionLoading.value = true
-  try {
-    await axios.patch(`${base.value}/${action}`, payload)
-    router.reload({ only: ['booking'] })
-  } catch (e) {
-    alert(e.response?.data?.message ?? 'Action failed.')
-  } finally {
-    actionLoading.value = false
-  }
+  router.patch(actionUrl(action), data, {
+    preserveScroll: true,
+    onSuccess: () => router.reload({ only: ['booking'] }),
+    onError:   (errors) => alert(Object.values(errors)[0] ?? 'Action failed.'),
+    onFinish:  () => { actionLoading.value = false },
+  })
 }
 
-async function assignTechnician() {
+function assignTechnician() {
   if (!selectedTechnician.value) return
-  await doAction('assign', { technician_id: selectedTechnician.value })
+  doAction('assign', { technician_id: selectedTechnician.value })
 }
 
-async function onCancelled(reason) {
+function onCancelled(reason) {
   showCancelModal.value = false
-  await doAction('cancel', { reason })
+  doAction('cancel', { reason })
 }
 
 function onRescheduled() {
@@ -278,16 +278,12 @@ function onRescheduled() {
   router.reload({ only: ['booking'] })
 }
 
-async function saveNotes() {
+function saveNotes() {
   savingNotes.value = true
-  try {
-    // PATCH /admin/bookings/{id}/reschedule doesn't exist for notes
-    // store notes via the complete endpoint or add a dedicated route
-    // For now update via a direct patch — add Route::patch('/{booking}/notes') to admin.php
-    await axios.patch(`${base.value}/notes`, { admin_notes: adminNotes.value })
-  } finally {
-    savingNotes.value = false
-  }
+  router.patch(actionUrl('notes'), { admin_notes: adminNotes.value }, {
+    preserveScroll: true,
+    onFinish: () => { savingNotes.value = false },
+  })
 }
 
 function formatDate(d) {

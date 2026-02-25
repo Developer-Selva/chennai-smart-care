@@ -28,10 +28,18 @@ class BookingController extends Controller
         $filters  = $request->only(['status', 'date', 'search', 'technician_id', 'from', 'to']);
         $bookings = $this->bookingRepo->paginateForAdmin($filters, 20);
 
+        // Status counts for the quick-filter tab badges
+        $counts = Booking::query()
+            ->selectRaw("status, count(*) as total")
+            ->whereIn('status', ['pending', 'confirmed', 'assigned', 'in_progress'])
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
         return Inertia::render('Admin/Bookings/Index', [
             'bookings'    => $bookings,
             'filters'     => $filters,
             'technicians' => Technician::active()->get(['id', 'name']),
+            'counts'      => $counts,
         ]);
     }
 
