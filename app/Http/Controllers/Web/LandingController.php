@@ -11,6 +11,7 @@ use App\Models\Consultation;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class LandingController extends Controller
 {
@@ -116,18 +117,33 @@ class LandingController extends Controller
 
     public function sitemap(): \Illuminate\Http\Response
     {
-        $posts      = BlogPost::published()->latest('published_at')->get(['slug', 'updated_at']);
-        $categories = $this->serviceRepo->getAllCategories();
+        $content = Cache::remember('sitemap.xml', now()->addHours(6), function () {
+            $posts = BlogPost::published()
+                ->latest('updated_at')
+                ->get(['slug', 'updated_at']);
 
-        $content = view('seo.sitemap', compact('posts', 'categories'))->render();
+            $categories = $this->serviceRepo->getAllCategories();
 
-        return response($content, 200)->header('Content-Type', 'application/xml');
+            return view('seo.sitemap', compact('posts', 'categories'))->render();
+        });
+
+        return response($content, 200)
+            ->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 
     public function robots(): \Illuminate\Http\Response
     {
-        $content = "User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /user/\n\nSitemap: " . url('/sitemap.xml');
+        $content = implode("\n", [
+            "User-agent: *",
+            "Allow: /",
+            "Disallow: /admin/",
+            "Disallow: /user/",
+            "Disallow: /storage/",
+            "",
+            "Sitemap: " . url('/sitemap.xml'),
+        ]);
 
-        return response($content, 200)->header('Content-Type', 'text/plain');
+        return response($content, 200)
+            ->header('Content-Type', 'text/plain; charset=UTF-8');
     }
 }
