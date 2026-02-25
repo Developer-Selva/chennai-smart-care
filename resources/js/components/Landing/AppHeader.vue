@@ -1,6 +1,6 @@
 <template>
   <header :class="[
-    'sticky top-0 z-40 w-full transition-all duration-200',
+    'sticky top-0 z-40 py-2 w-full transition-all duration-200',
     scrolled || minimal ? 'bg-white shadow-md' : 'bg-gray-900',
   ]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -9,7 +9,7 @@
         <!-- Logo -->
         <a href="/" class="flex items-center flex-shrink-0">
           <img
-            src="/images/logo.png"
+            src="/images/chennai_smart_care.png"
             alt="Chennai Smart Care — Expert Appliance Repair"
             class="h-20 w-auto object-contain transition-all duration-200"/>
         </a>

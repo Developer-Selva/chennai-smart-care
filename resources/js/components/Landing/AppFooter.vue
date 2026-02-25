@@ -9,7 +9,7 @@
         <div class="sm:col-span-2 lg:col-span-1">
           <div class="mb-4">
             <img
-              src="/images/logo.png"
+              src="/images/chennai_smart_care.png"
               alt="Chennai Smart Care — Expert Appliance Repair"
               class="h-20 w-auto object-contain"
             />
@@ -63,7 +63,7 @@
             </li>
             <li class="flex items-start gap-2.5">
               <EnvelopeIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <a href="mailto:support@chennaismarcare.in" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismarcare.in</a>
+              <a href="mailto:support@chennaismarcare.com" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismarcare.com</a>
             </li>
             <li class="flex items-start gap-2.5">
               <ClockIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
