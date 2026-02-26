@@ -105,6 +105,64 @@
           </div>
         </div>
 
+
+          <!-- Warranty Card -->
+          <div v-if="warranty" class="rounded-2xl border-2 overflow-hidden"
+               :class="warranty.is_active ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'">
+
+            <div class="px-5 py-3 border-b flex items-center justify-between"
+                 :class="warranty.is_active ? 'border-green-200 bg-green-100/50' : 'border-gray-200 bg-gray-100/50'">
+              <div class="flex items-center gap-2">
+                <ShieldCheckIcon class="w-4 h-4" :class="warranty.is_active ? 'text-green-600' : 'text-gray-400'" />
+                <span class="font-semibold text-sm text-gray-900">Service Warranty</span>
+                <span class="font-mono text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{{ warranty.warranty_number }}</span>
+              </div>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full"
+                    :class="warranty.is_active ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'">
+                {{ warranty.is_active ? '✓ ACTIVE' : 'EXPIRED' }}
+              </span>
+            </div>
+
+            <div class="p-5">
+              <!-- Services covered -->
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                <span v-for="svc in warranty.services_list" :key="svc"
+                      class="text-xs px-2.5 py-1 rounded-full font-medium"
+                      :class="warranty.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'">
+                  ✓ {{ svc }}
+                </span>
+              </div>
+
+              <!-- Period + progress -->
+              <div class="bg-white rounded-xl p-3 mb-3">
+                <div class="flex justify-between text-xs text-gray-600 font-medium mb-2">
+                  <span>From: {{ formatDate(warranty.starts_at) }}</span>
+                  <span :class="warranty.is_active ? 'text-gray-700' : 'text-red-500'">
+                    Expires: {{ formatDate(warranty.expires_at) }}
+                  </span>
+                </div>
+                <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all"
+                       :class="warranty.is_active ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 'bg-gray-300'"
+                       :style="`width:${warranty.progress_percent}%`"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-400 mt-1.5">
+                  <span>{{ warranty.progress_percent }}% elapsed</span>
+                  <span v-if="warranty.is_active" class="text-green-600 font-semibold">
+                    {{ warranty.days_remaining }} days remaining
+                  </span>
+                  <span v-else class="text-red-400">Warranty expired</span>
+                </div>
+              </div>
+
+              <p class="text-xs text-gray-500">
+                Customer can claim warranty by calling
+                <a href="tel:+919444900470" class="text-blue-600 font-semibold">+91 94449 00470</a>.
+                Same issue recurrence within 6 months = free re-service.
+              </p>
+            </div>
+          </div>
+
         <!-- ======== RIGHT COLUMN ======== -->
         <div class="space-y-4">
 
@@ -177,6 +235,27 @@
               <CheckCircleIcon class="w-4 h-4" /> Mark Completed
             </button>
 
+            <!-- Invoice button - available any time -->
+            <a :href="`/admin/bookings/${booking.id}/invoice/create`"
+               class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2">
+              <DocumentTextIcon class="w-4 h-4" />
+              {{ invoice ? 'View / Edit Invoice' : 'Generate Invoice' }}
+            </a>
+
+            <!-- View existing invoice -->
+            <a v-if="invoice"
+               :href="`/admin/bookings/${booking.id}/invoice/${invoice.id}`"
+               class="w-full border-2 border-blue-200 text-blue-700 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+              <span class="w-2 h-2 rounded-full flex-shrink-0"
+                    :class="{
+                      'bg-green-500': invoice.status === 'paid',
+                      'bg-amber-500': invoice.status === 'sent',
+                      'bg-gray-400':  invoice.status === 'draft',
+                    }"></span>
+              Invoice {{ invoice.invoice_number }}
+              <span class="text-xs font-bold capitalize">({{ invoice.status }})</span>
+            </a>
+
             <button v-if="!['completed','cancelled'].includes(booking.status)"
                     @click="showRescheduleModal = true"
                     class="w-full border-2 border-orange-400 text-orange-600 py-2.5 rounded-xl text-sm font-semibold hover:bg-orange-50 transition-colors">
@@ -223,7 +302,7 @@
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import {
-  ArrowLeftIcon, CalendarIcon, ClockIcon,
+  ArrowLeftIcon, CalendarIcon, ClockIcon, ShieldCheckIcon, DocumentTextIcon,
   CheckIcon, CheckCircleIcon, UserIcon,
 } from '@heroicons/vue/24/outline'
 import AdminLayout     from '@/components/Admin/AdminLayout.vue'
@@ -233,6 +312,8 @@ import CancelModal     from '@/components/Admin/Modals/CancelModal.vue'
 
 const props = defineProps({
   booking:     { type: Object, required: true },
+  warranty:    { type: Object, default: null },
+  invoice:     { type: Object, default: null },
   technicians: { type: Array,  default: () => [] },
 })
 

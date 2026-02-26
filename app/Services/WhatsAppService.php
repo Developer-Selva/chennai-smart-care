@@ -301,6 +301,53 @@ class WhatsAppService
         );
     }
 
+    public function sendInvoice($invoice): void
+    {
+        $invoice->loadMissing('items');
+        $phone = $this->normalizePhone($invoice->customer_phone ?? '');
+        if (! $phone) return;
+
+        $itemLines = $invoice->items->map(
+            fn ($i) => "  • {$i->description} × {$i->quantity} = ₹{$i->total}"
+        )->implode("\n");
+
+        $discountLine = $invoice->discount_amount > 0
+            ? "\n💸 *Discount:* -₹{$invoice->discount_amount}" : '';
+
+        $taxLine = $invoice->tax_amount > 0
+            ? "\n🧾 *GST ({$invoice->tax_percent}%):* ₹{$invoice->tax_amount}" : '';
+
+        $paymentLine = $invoice->payment_method !== 'pending'
+            ? "\n💳 *Payment:* " . ucfirst($invoice->payment_method) .
+              ($invoice->payment_reference ? " ({$invoice->payment_reference})" : '')
+            : "\n💳 *Payment:* Pending";
+
+        $statusBadge = $invoice->status === 'paid' ? '✅ PAID' : '📄 Invoice';
+
+        $this->sendText($phone,
+            "{$statusBadge} *{$invoice->invoice_number}*\n\n" .
+            "Hi {$invoice->customer_name}, here is your invoice from *Chennai Smart Care*.\n\n" .
+            "*Services:*\n{$itemLines}\n" .
+            "──────────────────\n" .
+            "💰 *Subtotal:* ₹{$invoice->subtotal}" .
+            $discountLine . $taxLine . "\n" .
+            "🏷️ *Total: ₹{$invoice->total}*" .
+            $paymentLine . "\n\n" .
+            "📲 View & download your invoice:\n" .
+            url("/user/invoices/{$invoice->id}") . "\n\n" .
+            "🛡️ All repairs carry a *6-month warranty*.\n" .
+            "Queries? Call *+91 94449 00470*\n\n" .
+            "_Chennai Smart Care — Expert Appliance Repair_"
+        );
+
+        // Admin copy
+        $this->sendText($this->adminPhone,
+            "📄 *Invoice Sent*\n" .
+            "{$invoice->invoice_number} → {$invoice->customer_name}\n" .
+            "Total: ₹{$invoice->total} | Status: {$invoice->status}"
+        );
+    }
+
     public function sendAmcUnlocked($user, $amc): void
     {
         $phone = $this->normalizePhone($user->phone ?? '');

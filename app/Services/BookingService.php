@@ -8,6 +8,7 @@ use App\Events\BookingRescheduled;
 use App\Models\Booking;
 use App\Repositories\Contracts\BookingRepositoryInterface;
 use App\Services\WhatsAppService;
+use App\Jobs\ProcessBookingCompletion;
 use App\Services\WarrantyService;
 
 class BookingService
@@ -122,7 +123,7 @@ class BookingService
         $booking = $booking->fresh(['items.service.category', 'technician', 'user']);
 
         // Create 6-month warranty + update annual spend + auto-unlock AMC
-        dispatch(fn () => $this->warrantyService->handleBookingCompleted($booking));
+        ProcessBookingCompletion::dispatch($booking);
 
         dispatch(fn () => $this->whatsApp->sendBookingCompleted($booking));
         return $booking;

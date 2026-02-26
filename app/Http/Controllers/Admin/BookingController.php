@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminBookingRequest;
 use App\Models\Booking;
+use App\Models\Warranty;
 use App\Models\Technician;
 use App\Services\BookingService;
 use App\Repositories\Contracts\BookingRepositoryInterface;
@@ -67,9 +68,36 @@ class BookingController extends Controller
     {
         $booking->load(['user', 'technician', 'items.service', 'history', 'review']);
 
+        // Warranty
+        $warranty = null;
+        if ($booking->status === 'completed') {
+            $w = Warranty::where('booking_id', $booking->id)->first();
+            if ($w) {
+                $warranty = array_merge($w->toArray(), [
+                    'days_remaining'   => $w->days_remaining,
+                    'is_active'        => $w->is_active,
+                    'progress_percent' => $w->progress_percent,
+                    'services_list'    => $w->services_list,
+                ]);
+            }
+        }
+
+        // Invoice
+        $inv = \App\Models\Invoice::where('booking_id', $booking->id)
+            ->with('items')
+            ->latest()
+            ->first();
+        $invoice = $inv ? array_merge($inv->toArray(), [
+            'is_paid'      => $inv->is_paid,
+            'is_sent'      => $inv->is_sent,
+            'status_label' => $inv->status_label,
+        ]) : null;
+
         return Inertia::render('Admin/Bookings/Show', [
             'booking'     => $booking,
             'technicians' => Technician::active()->get(['id', 'name', 'phone']),
+            'warranty'    => $warranty,
+            'invoice'     => $invoice,
         ]);
     }
 

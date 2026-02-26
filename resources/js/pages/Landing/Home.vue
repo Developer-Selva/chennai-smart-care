@@ -400,12 +400,12 @@
                   Annual Maintenance Contract
                 </div>
                 <span class="bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1.5 rounded-full">
-                  🎁 FREE when you spend ₹5,000/year
+                  🎁 FREE If Repair Costs ₹5,000/year
                 </span>
               </div>
 
               <h3 class="text-3xl font-extrabold mb-3 leading-tight">
-                Spend ₹5,000.<br>Get AMC Free.
+                ₹5,000+ Repair<br>Get AMC Free.
               </h3>
               <p class="text-emerald-200 text-base mb-6 leading-relaxed">
                 When your annual service spend crosses <strong class="text-white">₹5,000</strong>,

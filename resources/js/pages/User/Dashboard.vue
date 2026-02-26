@@ -11,7 +11,7 @@
           <h1 class="text-2xl font-bold text-gray-900">Welcome back, {{ firstName }}!</h1>
           <p class="text-gray-500 text-sm mt-1">Your service dashboard</p>
         </div>
-        <a href="/quick-booking"
+        <a href="bookings/create"
            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm">
           <PlusIcon class="w-4 h-4" /> Book a Service
         </a>
@@ -226,7 +226,7 @@
       <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-6">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 class="font-bold text-gray-900">Active Bookings</h2>
-          <a href="/quick-booking" class="text-blue-600 text-sm font-semibold hover:text-blue-700">+ New</a>
+          <a href="bookings/create" class="text-blue-600 text-sm font-semibold hover:text-blue-700">+ New</a>
         </div>
         <div v-if="activeBookings.length" class="divide-y divide-gray-100">
           <a v-for="booking in activeBookings" :key="booking.id"
@@ -248,7 +248,7 @@
         </div>
         <div v-else class="text-center py-10 text-gray-400 text-sm">
           No active bookings.
-          <a href="/quick-booking" class="text-blue-600 font-semibold ml-1">Book a service →</a>
+          <a href="bookings/create" class="text-blue-600 font-semibold ml-1">Book a service →</a>
         </div>
       </div>
 
@@ -288,7 +288,7 @@
 import { computed } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import {
-  PlusIcon, ShieldCheckIcon, ChevronRightIcon, TrophyIcon,
+  PlusIcon, ShieldCheckIcon, ChevronRightIcon, TrophyIcon, DocumentTextIcon,
 } from '@heroicons/vue/24/outline'
 import AppHeader   from '@/components/Landing/AppHeader.vue'
 import AppFooter   from '@/components/Landing/AppFooter.vue'

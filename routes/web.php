@@ -68,9 +68,12 @@ Route::middleware('guest')->prefix('user')->name('user.')->group(function () {
 Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
+    Route::get('/profile', [UserAuthController::class, 'profile'])->name('profile');
+    Route::put('/profile', [UserAuthController::class, 'updateProfile'])->name('profile.update');
     Route::get('/bookings/create', [UserBooking::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [UserBooking::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{bookingNumber}', [UserDashboard::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{bookingNumber}/review', [UserBooking::class, 'review'])->name('bookings.review');
     Route::post('/bookings/{bookingNumber}/cancel', [UserBooking::class, 'cancel'])->name('bookings.cancel');
+    Route::get('/invoices/{invoice}', [\App\Http\Controllers\User\InvoiceController::class, 'show'])->name('invoice.show');
 });

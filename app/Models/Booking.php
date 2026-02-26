@@ -29,6 +29,8 @@ class Booking extends Model
         'cancelled_at'         => 'datetime',
         'is_free_consultation' => 'boolean',
     ];
+
+    // Append computed accessors so they're always included in JSON/Inertia responses
     protected $appends = ['customer_name', 'customer_phone', 'customer_email'];
 
     // ---- Relationships ----
@@ -56,6 +58,11 @@ class Booking extends Model
     public function review()
     {
         return $this->hasOne(Review::class);
+    }
+
+    public function invoice()
+    {
+        return $this->hasOne(\App\Models\Invoice::class)->latest();
     }
 
     // ---- Scopes ----

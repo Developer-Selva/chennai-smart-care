@@ -46,6 +46,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::patch('/{booking}/complete',    [BookingController::class, 'complete'])->name('complete');
             Route::patch('/{booking}/cancel',      [BookingController::class, 'cancel'])->name('cancel');
             Route::patch('/{booking}/notes',       [BookingController::class, 'notes'])->name('notes');
+
+            Route::get('/{booking}/invoice/create', [\App\Http\Controllers\Admin\InvoiceController::class, 'create'])->name('invoice.create');
+            Route::post('/{booking}/invoice', [\App\Http\Controllers\Admin\InvoiceController::class, 'store'])->name('invoice.store');
+            Route::get('/{booking}/invoice/{invoice}', [\App\Http\Controllers\Admin\InvoiceController::class, 'show'])->name('invoice.show');
+            Route::put('/{booking}/invoice/{invoice}', [\App\Http\Controllers\Admin\InvoiceController::class, 'update'])->name('invoice.update');
+            Route::patch('/{booking}/invoice/{invoice}/send', [\App\Http\Controllers\Admin\InvoiceController::class, 'send'])->name('invoice.send');
+            Route::patch('/{booking}/invoice/{invoice}/mark-paid', [\App\Http\Controllers\Admin\InvoiceController::class, 'markPaid'])->name('invoice.mark-paid');
+            Route::get('/{booking}/invoice/{invoice}/download', [\App\Http\Controllers\Admin\InvoiceController::class, 'download'])->name('invoice.download');
+
         });
 
         // Services & Categories
