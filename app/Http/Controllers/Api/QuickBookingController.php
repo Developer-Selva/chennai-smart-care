@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\BookingCreated;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\BookingRepositoryInterface;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
@@ -39,6 +40,9 @@ class QuickBookingController extends Controller
         $data['status'] = 'pending';
 
         $booking = $this->bookingRepo->createBooking($data);
+
+        // Fire event — triggers WhatsApp notification to customer + admin
+        event(new BookingCreated($booking->fresh(['items.service', 'user'])));
 
         return response()->json([
             'message'        => 'Booking created successfully.',

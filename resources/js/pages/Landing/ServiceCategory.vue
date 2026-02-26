@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <Head>
-      <title>{{ category.name }} Repair in Chennai — Chennai Smart Care</title>
-      <meta name="description" :content="`Expert ${category.name} repair in Chennai. Certified technicians, same-day service, 6-Month warranty. Book online now!`" />
+  <title>{{ category.name }} Repair in Chennai | Same-Day Service in Porur | Chennai Smart Care</title>      
+  <meta name="description":content="`Looking for reliable ${category.name} repair in Chennai? Same-day doorstep service in Porur, Vadapalani, Guindy & nearby areas. 6-Month warranty. Call now!`" />
     </Head>
     <AppHeader />
 

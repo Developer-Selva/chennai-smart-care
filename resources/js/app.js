@@ -1,44 +1,33 @@
-import { createApp, h } from 'vue'
-import { createInertiaApp, Head, Link } from '@inertiajs/vue3'
-import { createPinia } from 'pinia'
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import './bootstrap'
 import '../css/app.css'
-import { ZiggyVue } from 'ziggy-js'
+
+import { createApp, h } from 'vue'
+import { createInertiaApp } from '@inertiajs/vue3'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import axios from 'axios'
 
 // ── Axios global setup ──────────────────────────────────────
-
+// 1. Send CSRF token with every request (required by Laravel)
 axios.defaults.headers.common['X-CSRF-TOKEN'] =
     document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? ''
 
-axios.defaults.withCredentials = true
-
+// 3. Tell Laravel this is an AJAX request (so it returns JSON errors, not HTML)
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-
-const appName = import.meta.env.VITE_APP_NAME || 'Chennai Smart Care'
+// ────────────────────────────────────────────────────────────
 
 createInertiaApp({
-  title: (title) => `${title} — ${appName}`,
-
-  resolve: (name) =>
-    resolvePageComponent(
-      `./pages/${name}.vue`,
-      import.meta.glob('./pages/**/*.vue')
-    ),
-
-  setup({ el, App, props, plugin }) {
-    const pinia = createPinia()
-
-    return createApp({ render: () => h(App, props) })
-      .use(plugin)
-      .use(pinia)
-      .use(ZiggyVue)
-      .component('Head', Head)
-      .component('Link', Link)
-      .mount(el)
-  },
-
-  progress: {
-    color: '#3B82F6',
-  },
+    title: (title) => `${title} — Chennai Smart Care`,
+    resolve: (name) =>
+        resolvePageComponent(
+            `./pages/${name}.vue`,
+            import.meta.glob('./pages/**/*.vue'),
+        ),
+    setup({ el, App, props, plugin }) {
+        return createApp({ render: () => h(App, props) })
+            .use(plugin)
+            .mount(el)
+    },
+    progress: {
+        color: '#3B82F6',
+    },
 })

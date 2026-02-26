@@ -1,7 +1,5 @@
 <?php
-// -------------------------------------------------------
-// app/Services/BookingService.php
-// -------------------------------------------------------
+
 namespace App\Services;
 
 use App\Events\BookingCreated;
@@ -9,42 +7,33 @@ use App\Events\BookingConfirmed;
 use App\Events\BookingRescheduled;
 use App\Models\Booking;
 use App\Repositories\Contracts\BookingRepositoryInterface;
+use App\Services\WhatsAppService;
+use App\Services\WarrantyService;
 
 class BookingService
 {
     public function __construct(
         protected BookingRepositoryInterface $bookingRepo,
-        protected LocationService $locationService,
-        protected SmsService $smsService,
+        protected WhatsAppService $whatsApp,
+        protected WarrantyService $warrantyService,
     ) {}
 
-    /**
-     * Create a quick booking (no auth required).
-     */
     public function createQuickBooking(array $validated): Booking
     {
-        // Validate location is within 20km of Chennai
-        $this->locationService->assertWithinChennai(
-            $validated['latitude'],
-            $validated['longitude']
-        );
-        
+        // If a user account exists with this phone, link the booking to them
         $existingUser = \App\Models\User::where('phone', $validated['guest_phone'])->first();
 
         $booking = $this->bookingRepo->createBooking([
             ...$validated,
             'user_id' => $existingUser?->id,
-            'source' => 'website',
+            'source'  => 'website',
         ]);
 
-        event(new BookingCreated($booking));
+        event(new BookingCreated($booking->fresh(['items.service', 'user'])));
 
         return $booking;
     }
 
-    /**
-     * Create a booking for an authenticated user.
-     */
     public function createUserBooking(array $validated, int $userId): Booking
     {
         $user = \App\Models\User::find($userId);
@@ -59,12 +48,11 @@ class BookingService
             'source'      => 'website',
         ]);
 
+        event(new BookingCreated($booking->fresh(['items.service', 'user'])));
+
         return $booking;
     }
 
-    /**
-     * Admin creates a booking manually.
-     */
     public function createAdminBooking(array $validated, $admin): Booking
     {
         $booking = $this->bookingRepo->createBooking([
@@ -72,25 +60,31 @@ class BookingService
             'source' => 'admin',
         ]);
 
-        // Auto-confirm admin-created bookings
         $this->bookingRepo->updateStatus($booking, 'confirmed', 'Created by admin', $admin);
-        event(new BookingConfirmed($booking));
+        $booking = $booking->fresh(['items.service', 'user']);
+        event(new BookingCreated($booking));
 
-        return $booking->fresh();
+        return $booking;
     }
 
     public function confirmBooking(Booking $booking, $admin, ?string $note = null): Booking
     {
-        $booking = $this->bookingRepo->updateStatus($booking, 'confirmed', $note, $admin);
-        event(new BookingConfirmed($booking));
+        $booking = $this->bookingRepo->updateStatus($booking, 'confirmed', $note ?? 'Booking confirmed', $admin);
+        event(new BookingConfirmed($booking->fresh(['items.service', 'user'])));
         return $booking;
     }
 
     public function assignTechnician(Booking $booking, int $technicianId, $admin): Booking
     {
         $booking->update(['technician_id' => $technicianId]);
-        $booking = $this->bookingRepo->updateStatus($booking, 'assigned', "Technician assigned", $admin);
+        $booking = $this->bookingRepo->updateStatus($booking, 'assigned', 'Technician assigned', $admin);
+        dispatch(fn () => $this->whatsApp->sendTechnicianAssigned($booking->fresh(['technician'])));
         return $booking;
+    }
+
+    public function markInProgress(Booking $booking, $actor): Booking
+    {
+        return $this->bookingRepo->updateStatus($booking, 'in_progress', 'Service started', $actor);
     }
 
     public function rescheduleBooking(
@@ -101,18 +95,15 @@ class BookingService
         ?string $note = null
     ): Booking {
         $booking = $this->bookingRepo->reschedule($booking, $date, $timeSlot, $actor);
-        event(new BookingRescheduled($booking));
+        event(new BookingRescheduled($booking->fresh(['items.service', 'user'])));
         return $booking;
-    }
-
-    public function markInProgress(Booking $booking, $actor): Booking
-    {
-        return $this->bookingRepo->updateStatus($booking, 'in_progress', 'Service started', $actor);
     }
 
     public function cancelBooking(Booking $booking, string $reason, $actor): Booking
     {
-        return $this->bookingRepo->cancelBooking($booking, $reason, $actor);
+        $booking = $this->bookingRepo->cancelBooking($booking, $reason, $actor);
+        dispatch(fn () => $this->whatsApp->sendBookingCancelled($booking, $reason));
+        return $booking;
     }
 
     public function completeBooking(Booking $booking, $actor, ?string $note = null): Booking
@@ -128,20 +119,25 @@ class BookingService
             }
         }
 
-        return $booking->fresh();
+        $booking = $booking->fresh(['items.service.category', 'technician', 'user']);
+
+        // Create 6-month warranty + update annual spend + auto-unlock AMC
+        dispatch(fn () => $this->warrantyService->handleBookingCompleted($booking));
+
+        dispatch(fn () => $this->whatsApp->sendBookingCompleted($booking));
+        return $booking;
     }
 
     public function getAvailableSlots(string $date): array
     {
-        // Don't allow past dates or dates more than 30 days out
         $targetDate = \Carbon\Carbon::parse($date);
+
         if ($targetDate->isPast() && ! $targetDate->isToday()) {
             return [];
         }
 
         $slots = $this->bookingRepo->getSlotAvailability($date);
 
-        // If it's today, filter out past time slots
         if ($targetDate->isToday()) {
             $currentHour = now()->setTimezone('Asia/Kolkata')->hour;
             $slots = array_filter($slots, function ($slot) use ($currentHour) {

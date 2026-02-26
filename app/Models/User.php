@@ -38,6 +38,21 @@ class User extends Authenticatable
         return $this->hasMany(Review::class);
     }
 
+    public function warranties()
+    {
+        return $this->hasMany(Warranty::class)->orderByDesc('created_at');
+    }
+
+    public function amcSubscriptions()
+    {
+        return $this->hasMany(AmcSubscription::class)->orderByDesc('created_at');
+    }
+
+    public function activeAmc()
+    {
+        return $this->hasOne(AmcSubscription::class)->where('status', 'active')->where('expires_at', '>=', today());
+    }
+
     public function isPhoneVerified(): bool
     {
         return ! is_null($this->phone_verified_at);

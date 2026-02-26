@@ -8,15 +8,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\BlogPost;
 use App\Models\Consultation;
+use App\Services\WhatsAppService;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class LandingController extends Controller
 {
     public function __construct(
-        protected ServiceRepositoryInterface $serviceRepo
+        protected ServiceRepositoryInterface $serviceRepo,
+        protected WhatsAppService $whatsApp,
     ) {}
 
     public function index(): Response
@@ -101,7 +102,10 @@ class LandingController extends Controller
             'service_interest' => 'nullable|string|max:50',
         ]);
 
-        Consultation::create($validated);
+        $consultation = Consultation::create($validated);
+
+        // Notify customer + admin via WhatsApp (queued, non-blocking)
+        dispatch(fn () => $this->whatsApp->sendConsultationCreated($consultation));
 
         return response()->json([
             'message' => 'Thank you! We will call you within 30 minutes.',
@@ -117,33 +121,18 @@ class LandingController extends Controller
 
     public function sitemap(): \Illuminate\Http\Response
     {
-        $content = Cache::remember('sitemap.xml', now()->addHours(6), function () {
-            $posts = BlogPost::published()
-                ->latest('updated_at')
-                ->get(['slug', 'updated_at']);
+        $posts      = BlogPost::published()->latest('published_at')->get(['slug', 'updated_at']);
+        $categories = $this->serviceRepo->getAllCategories();
 
-            $categories = $this->serviceRepo->getAllCategories();
+        $content = view('seo.sitemap', compact('posts', 'categories'))->render();
 
-            return view('seo.sitemap', compact('posts', 'categories'))->render();
-        });
-
-        return response($content, 200)
-            ->header('Content-Type', 'application/xml; charset=UTF-8');
+        return response($content, 200)->header('Content-Type', 'application/xml');
     }
 
     public function robots(): \Illuminate\Http\Response
     {
-        $content = implode("\n", [
-            "User-agent: *",
-            "Allow: /",
-            "Disallow: /admin/",
-            "Disallow: /user/",
-            "Disallow: /storage/",
-            "",
-            "Sitemap: " . url('/sitemap.xml'),
-        ]);
+        $content = "User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /user/\n\nSitemap: " . url('/sitemap.xml');
 
-        return response($content, 200)
-            ->header('Content-Type', 'text/plain; charset=UTF-8');
+        return response($content, 200)->header('Content-Type', 'text/plain');
     }
 }
