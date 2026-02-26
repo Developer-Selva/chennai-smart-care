@@ -142,9 +142,8 @@ info "Dispatching a test job to the queue..."
 
 TEST_RESULT=$(php artisan tinker --execute="
     \$key = 'queue_test_' . time();
-    dispatch(function() use (\$key) {
-        cache()->put(\$key, 'processed', 30);
-    });
+    cache()->forget(\$key);
+    \App\Jobs\QueueHealthCheck::dispatch(\$key);
     sleep(3);
     echo cache()->get(\$key, 'not_processed');
 " 2>/dev/null | tail -1)
