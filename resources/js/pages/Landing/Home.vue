@@ -436,7 +436,7 @@
               </div>
 
               <div class="flex flex-wrap gap-3">
-                <a href="#free-consultation"
+                <a href="/quick-booking"
                    class="flex-1 text-center bg-white text-emerald-700 font-bold px-5 py-3 rounded-xl hover:bg-emerald-50 transition-colors text-sm">
                   Book a Service
                 </a>

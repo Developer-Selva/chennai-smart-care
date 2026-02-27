@@ -6,7 +6,8 @@
       <meta name="description" content="Expert tips on AC, refrigerator and washing machine maintenance and repair in Chennai." />
     </Head>
 
-    <AppHeader :minimal="true" />
+    <AppHeader/>
+    <!-- <AppHeader :minimal="true" /> --> 
 
     <!-- Hero -->
     <section class="bg-gradient-to-br from-blue-900 to-indigo-900 text-white py-14">
