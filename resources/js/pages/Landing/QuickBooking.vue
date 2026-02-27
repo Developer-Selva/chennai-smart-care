@@ -1,126 +1,226 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
 
     <Head><title>Quick Booking — Chennai Smart Care</title></Head>
 
     <AppHeader />
 
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
-      <!-- Progress Bar -->
+      <!-- Page Header -->
+      <div class="text-center mb-8 animate-fade-in-down">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">Quick Service Booking</h1>
+        <p class="text-gray-500 mt-2 text-sm sm:text-base">Book your appliance repair in under 2 minutes</p>
+      </div>
+
+      <!-- Progress Bar with Steps -->
       <div class="mb-8">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-500">Step {{ currentStep }} of {{ totalSteps }}</span>
-          <span class="text-sm font-medium text-blue-600">{{ stepLabels[currentStep - 1] }}</span>
-        </div>
-        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div class="h-full bg-blue-600 rounded-full transition-all duration-500"
-               :style="{ width: `${(currentStep / totalSteps) * 100}%` }">
+        <div class="flex items-center justify-between mb-4">
+          <div v-for="(step, index) in stepLabels" :key="index" 
+               class="flex flex-col items-center flex-1">
+            <div class="flex items-center w-full">
+              <div v-for="i in 2" :key="i" class="flex-1" :class="{ 'hidden': i === 1 && index === 0 }">
+                <div class="h-1" :class="getProgressLineClass(index, i)"></div>
+              </div>
+            </div>
+            <div class="flex items-center mt-2">
+              <div :class="[
+                'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300',
+                currentStep > index + 1 ? 'bg-green-500 text-white' :
+                currentStep === index + 1 ? 'bg-blue-600 text-white ring-4 ring-blue-100' :
+                'bg-gray-200 text-gray-500'
+              ]">
+                <span v-if="currentStep > index + 1">✓</span>
+                <span v-else>{{ index + 1 }}</span>
+              </div>
+              <span :class="[
+                'text-xs font-medium ml-2 hidden sm:block',
+                currentStep >= index + 1 ? 'text-gray-900' : 'text-gray-400'
+              ]">{{ step }}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <!-- Main Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
 
         <!-- ========== STEP 1: Contact Info ========== -->
         <div v-if="currentStep === 1" class="p-6 sm:p-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-1">Your Contact Details</h2>
-          <p class="text-gray-500 text-sm mb-6">No account needed — just your name and phone number.</p>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl">📞</div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Your Contact Details</h2>
+              <p class="text-gray-500 text-sm">No account needed — just your name and phone number.</p>
+            </div>
+          </div>
 
           <div class="space-y-5">
             <FormField label="Full Name *" :error="errors.guest_name">
-              <input v-model="form.guest_name" type="text" placeholder="e.g., Rajesh Kumar"
-                     class="form-input" @blur="validateField('guest_name')" />
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <UserIcon class="h-5 w-5 text-gray-400" />
+                </div>
+                <input v-model="form.guest_name" type="text" placeholder="e.g., Rajesh Kumar"
+                       class="form-input pl-10" @blur="validateField('guest_name')" 
+                       :class="{ 'border-red-300 focus:ring-red-500': errors.guest_name }" style="padding-left: 35px;"/>
+              </div>
             </FormField>
 
             <FormField label="Phone Number *" :error="errors.guest_phone">
               <div class="flex">
-                <span class="inline-flex items-center px-4 bg-gray-100 border border-r-0 border-gray-300 rounded-l-xl text-gray-600 text-sm font-medium">+91</span>
+                <span class="inline-flex items-center px-4 bg-gray-100 border border-r-0 border-gray-300 rounded-l-xl text-gray-600 text-sm font-medium">
+                  +91
+                </span>
                 <input v-model="form.guest_phone" type="tel" placeholder="94449 00470" maxlength="10"
-                       class="form-input rounded-l-none flex-1" @blur="validateField('guest_phone')" />
+                       class="form-input rounded-l-none flex-1" @blur="validateField('guest_phone')"
+                       :class="{ 'border-red-300 focus:ring-red-500': errors.guest_phone }" />
               </div>
+              <p class="text-xs text-gray-400 mt-1">We'll send booking updates via SMS & WhatsApp</p>
             </FormField>
 
             <FormField label="Email Address (Optional)" :error="errors.guest_email">
-              <input v-model="form.guest_email" type="email" placeholder="you@example.com" class="form-input" />
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <EnvelopeIcon class="h-5 w-5 text-gray-400" />
+                </div>
+                <input v-model="form.guest_email" type="email" placeholder="you@example.com" 
+                       class="form-input pl-10" style="padding-left: 35px;"/>
+              </div>
             </FormField>
           </div>
 
-          <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
-            <p class="text-sm text-blue-700">
-              <strong>Already have an account?</strong>
-              <a href="/user/login" class="ml-1 underline">Login for faster booking</a>
-            </p>
+          <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+            <div class="flex items-center gap-3">
+              <UserCircleIcon class="w-8 h-8 text-blue-600" />
+              <div class="flex-1">
+                <p class="text-sm text-blue-900 font-medium">Already have an account?</p>
+                <p class="text-xs text-blue-700 mt-0.5">Sign in for faster booking with saved details</p>
+              </div>
+              <a href="/user/login" 
+                 class="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors shadow-sm">
+                Sign In
+              </a>
+            </div>
           </div>
         </div>
 
         <!-- ========== STEP 2: Select Services ========== -->
         <div v-if="currentStep === 2" class="p-6 sm:p-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-1">Select Services</h2>
-          <p class="text-gray-500 text-sm mb-6">Choose one or multiple services.</p>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl">🔧</div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Select Services</h2>
+              <p class="text-gray-500 text-sm">Choose one or multiple services you need</p>
+            </div>
+          </div>
 
           <div class="space-y-6">
-            <div v-for="category in categories" :key="category.id">
-              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <div v-for="category in categories" :key="category.id" class="animate-slide-in">
+              <h3 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <span class="w-6 h-6 flex items-center justify-center bg-blue-100 rounded-lg text-sm">
                   {{ category.icon || '🔧' }}
                 </span>
                 {{ category.name }}
               </h3>
-              <div class="space-y-2">
-                <button v-for="service in category.services" :key="service.id"
-                        @click="toggleService(service)"
-                        :class="[
-                          'w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left',
-                          isServiceSelected(service.id)
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-blue-200 hover:bg-gray-50',
-                        ]">
-                  <div class="flex items-center gap-3">
-                    <div :class="[
-                      'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors',
-                      isServiceSelected(service.id) ? 'border-blue-500 bg-blue-500' : 'border-gray-300',
+              <div class="space-y-3">
+                <div v-for="service in category.services" :key="service.id"
+                     @click="toggleService(service)"
+                     :class="[
+                      'relative p-4 rounded-xl border-2 transition-all cursor-pointer hover:shadow-md group',
+                      isServiceSelected(service.id)
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-200 hover:bg-gray-50',
                     ]">
-                      <span v-if="isServiceSelected(service.id)" class="text-white text-[10px] font-bold">✓</span>
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start gap-3 flex-1">
+                      <div class="pt-0.5">
+                        <div :class="[
+                          'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
+                          isServiceSelected(service.id) 
+                            ? 'border-blue-500 bg-blue-500' 
+                            : 'border-gray-300 group-hover:border-blue-400'
+                        ]">
+                          <span v-if="isServiceSelected(service.id)" class="text-white text-xs">✓</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p class="font-semibold text-gray-900">{{ service.name }}</p>
+                        <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                          <ClockIcon class="w-3 h-3" />
+                          {{ service.duration_estimate || '30-45 mins' }}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p class="font-medium text-gray-900 text-sm">{{ service.name }}</p>
-                      <p class="text-xs text-gray-500 mt-0.5">{{ service.duration_estimate }}</p>
+                    <div class="text-right ml-4">
+                      <p class="font-bold text-gray-900 text-lg">₹{{ service.effective_price ?? service.base_price }}</p>
+                      <p v-if="service.discounted_price" class="text-xs text-gray-400 line-through">₹{{ service.base_price }}</p>
                     </div>
                   </div>
-                  <div class="text-right flex-shrink-0 ml-4">
-                    <p class="font-bold text-gray-900">₹{{ service.effective_price ?? service.base_price }}</p>
-                    <p v-if="service.discounted_price" class="text-xs text-gray-400 line-through">₹{{ service.base_price }}</p>
+                  
+                  <!-- Popular tag -->
+                  <div v-if="service.is_popular" 
+                       class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full shadow-lg">
+                    Popular
                   </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Selected summary -->
-          <div v-if="selectedServices.length > 0"
-               class="mt-6 p-4 bg-green-50 rounded-xl border border-green-200">
-            <div class="flex justify-between items-center">
-              <div>
-                <p class="font-semibold text-green-800 text-sm">
-                  {{ selectedServices.length }} service{{ selectedServices.length > 1 ? 's' : '' }} selected
-                </p>
+          <!-- Selected summary with animation -->
+          <Transition
+            enter-active-class="transform transition duration-300 ease-out"
+            enter-from-class="opacity-0 scale-95"
+            enter-to-class="opacity-100 scale-100"
+            leave-active-class="transform transition duration-200 ease-in"
+            leave-from-class="opacity-100 scale-100"
+            leave-to-class="opacity-0 scale-95"
+          >
+            <div v-if="selectedServices.length > 0"
+                 class="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <ShoppingBagIcon class="w-5 h-5 text-green-600" />
+                  <div>
+                    <p class="font-semibold text-green-800">
+                      {{ selectedServices.length }} service{{ selectedServices.length > 1 ? 's' : '' }} selected
+                    </p>
+                    <p class="text-xs text-green-600 mt-0.5">You can add more services anytime</p>
+                  </div>
+                </div>
+                <p class="font-bold text-green-800 text-xl">₹{{ totalPrice }}</p>
               </div>
-              <p class="font-bold text-green-800">₹{{ totalPrice }}</p>
             </div>
-          </div>
-          <p v-if="errors.services" class="mt-2 text-red-600 text-sm">{{ errors.services }}</p>
+          </Transition>
+          
+          <p v-if="errors.services" class="mt-2 text-red-600 text-sm flex items-center gap-1">
+            <ExclamationCircleIcon class="w-4 h-4" />
+            {{ errors.services }}
+          </p>
         </div>
 
         <!-- ========== STEP 3: Location ========== -->
         <div v-if="currentStep === 3" class="p-6 sm:p-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-1">Service Address</h2>
-          <p class="text-gray-500 text-sm mb-6">We serve within 20km of Chennai city centre.</p>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl">📍</div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Service Address</h2>
+              <p class="text-gray-500 text-sm">We serve within 20km of Chennai city centre</p>
+            </div>
+          </div>
 
           <button @click="detectLocation" :disabled="detectingLocation"
-                  class="w-full flex items-center justify-center gap-3 py-3 px-4 border-2 border-dashed border-blue-300 text-blue-600 rounded-xl hover:bg-blue-50 transition-colors mb-6 font-medium">
-            <span :class="['text-lg', detectingLocation && 'animate-bounce']">📍</span>
-            {{ detectingLocation ? 'Detecting your location...' : 'Use My Current Location' }}
+                  class="w-full group flex items-center justify-center gap-3 py-4 px-4 border-2 border-dashed border-blue-300 text-blue-600 rounded-xl hover:bg-blue-50 transition-all mb-6 font-medium relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <MapPinIcon class="w-5 h-5 group-hover:animate-bounce" />
+            <span>{{ detectingLocation ? 'Detecting your location...' : 'Use My Current Location' }}</span>
+            <span v-if="detectingLocation" class="ml-2">
+              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </span>
           </button>
 
           <div class="flex items-center gap-3 mb-4">
@@ -131,45 +231,91 @@
 
           <div class="space-y-4">
             <FormField label="Full Address *" :error="errors.address">
-              <textarea v-model="form.address" rows="3"
-                        placeholder="House/Flat No, Street, Locality..."
-                        class="form-input resize-none"></textarea>
+              <div class="relative">
+                <div class="absolute top-3 left-3 pointer-events-none">
+                  <HomeIcon class="w-5 h-5 text-gray-400" />
+                </div>
+                <textarea v-model="form.address" rows="3"
+                          placeholder="House/Flat No, Street, Locality..."
+                          class="form-input pl-10 resize-none" style="padding-left: 35px;"></textarea>
+              </div>
             </FormField>
+            
             <div class="grid grid-cols-2 gap-4">
               <FormField label="Area / Locality">
-                <input v-model="form.area" type="text" placeholder="Anna Nagar" class="form-input" />
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <BuildingOfficeIcon class="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input v-model="form.area" type="text" placeholder="Anna Nagar" class="form-input pl-10" style="padding-left: 35px;"/>
+                </div>
               </FormField>
+              
               <FormField label="Pincode">
-                <input v-model="form.pincode" type="text" maxlength="6" placeholder="600001" class="form-input" />
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MapPinIcon class="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input v-model="form.pincode" type="text" maxlength="6" placeholder="600001" 
+                         class="form-input pl-10" @input="validatePincode" style="padding-left: 35px;"/>
+                </div>
               </FormField>
             </div>
           </div>
 
-          <div v-if="locationValidated" class="mt-4 flex items-center gap-2 text-green-600 text-sm font-medium">
-            ✅ Location is within our service area
-          </div>
-          <div v-if="locationError" class="mt-4 flex items-center gap-2 text-red-600 text-sm">
-            ❌ {{ locationError }}
-          </div>
+          <!-- Location validation feedback -->
+          <Transition
+            enter-active-class="transform transition duration-300 ease-out"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+          >
+            <div v-if="locationValidated" 
+                 class="mt-4 p-3 bg-green-50 rounded-xl border border-green-200 flex items-center gap-2 text-green-700">
+              <CheckCircleIcon class="w-5 h-5 flex-shrink-0" />
+              <span class="text-sm">✅ Location is within our service area</span>
+            </div>
+          </Transition>
+          
+          <Transition
+            enter-active-class="transform transition duration-300 ease-out"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+          >
+            <div v-if="locationError" 
+                 class="mt-4 p-3 bg-red-50 rounded-xl border border-red-200 flex items-center gap-2 text-red-600">
+              <ExclamationCircleIcon class="w-5 h-5 flex-shrink-0" />
+              <span class="text-sm">{{ locationError }}</span>
+            </div>
+          </Transition>
         </div>
 
         <!-- ========== STEP 4: Date & Time ========== -->
         <div v-if="currentStep === 4" class="p-6 sm:p-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-1">Choose Date & Time</h2>
-          <p class="text-gray-500 text-sm mb-6">Available 9AM – 9PM, 7 days a week.</p>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl">📅</div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Choose Date & Time</h2>
+              <p class="text-gray-500 text-sm">Available 9AM – 9PM, 7 days a week</p>
+            </div>
+          </div>
 
-          <!-- Date picker -->
+          <!-- Date picker with calendar icon -->
           <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">Select Date</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1">
+              <CalendarIcon class="w-4 h-4" />
+              Select Date
+            </label>
             <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
               <button v-for="date in availableDates" :key="date.value"
                       @click="selectDate(date.value)"
                       :class="[
-                        'flex flex-col items-center py-3 px-2 rounded-xl border-2 transition-all text-center',
+                        'flex flex-col items-center py-3 px-1 rounded-xl border-2 transition-all text-center',
                         form.booking_date === date.value
-                          ? 'border-blue-500 bg-blue-500 text-white'
-                          : 'border-gray-200 hover:border-blue-200 text-gray-700',
-                      ]">
+                          ? 'border-blue-500 bg-blue-500 text-white shadow-lg shadow-blue-200'
+                          : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50 text-gray-700',
+                        date.isPast && 'opacity-50 cursor-not-allowed hover:border-gray-200 hover:bg-transparent'
+                      ]"
+                      :disabled="date.isPast">
                 <span class="text-xs font-medium">{{ date.day }}</span>
                 <span class="text-lg font-bold leading-tight">{{ date.dateNum }}</span>
                 <span class="text-xs">{{ date.month }}</span>
@@ -178,103 +324,190 @@
           </div>
 
           <!-- Time slots -->
-          <div v-if="form.booking_date">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">Select Time Slot</label>
-            <div v-if="loadingSlots" class="text-center py-8 text-gray-400 text-sm">
-              Loading available slots...
+          <div v-if="form.booking_date" class="animate-slide-in">
+            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1">
+              <ClockIcon class="w-4 h-4" />
+              Select Time Slot
+            </label>
+            
+            <div v-if="loadingSlots" class="text-center py-12">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
+              <p class="text-gray-400 text-sm mt-2">Checking availability...</p>
             </div>
+            
+            <div v-else-if="timeSlots.length === 0" class="text-center py-8 bg-gray-50 rounded-xl">
+              <CalendarIcon class="w-12 h-12 text-gray-300 mx-auto mb-2" />
+              <p class="text-gray-500">No slots available for this date</p>
+              <p class="text-xs text-gray-400 mt-1">Please select another date</p>
+            </div>
+            
             <div v-else class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <button v-for="slot in timeSlots" :key="slot.slot"
                       @click="slot.available && (form.time_slot = slot.slot)"
                       :disabled="!slot.available"
                       :class="[
-                        'py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all',
+                        'relative py-3 px-2 rounded-xl border-2 text-sm font-medium transition-all',
                         !slot.available
-                          ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed line-through'
+                          ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
                           : form.time_slot === slot.slot
-                            ? 'border-blue-500 bg-blue-500 text-white'
-                            : 'border-gray-200 hover:border-blue-200 text-gray-700',
+                            ? 'border-blue-500 bg-blue-500 text-white shadow-lg shadow-blue-200'
+                            : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50 text-gray-700',
                       ]">
-                {{ slot.label }}
-                <span v-if="!slot.available" class="block text-xs mt-0.5">Full</span>
+                <span>{{ slot.label }}</span>
+                <span v-if="!slot.available" class="absolute -top-1 -right-1">
+                  <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                  </span>
+                </span>
               </button>
             </div>
           </div>
 
+          <!-- Special instructions -->
           <FormField label="Any Special Instructions? (Optional)" class="mt-6">
-            <textarea v-model="form.customer_notes" rows="3"
-                      placeholder="e.g., AC model, symptoms, floor number..."
-                      class="form-input resize-none"></textarea>
+            <div class="relative">
+              <div class="absolute top-3 left-3 pointer-events-none">
+                <DocumentTextIcon class="w-5 h-5 text-gray-400" />
+              </div>
+              <textarea v-model="form.customer_notes" rows="3"
+                        placeholder="e.g., AC model, symptoms, floor number, gate code..."
+                        class="form-input pl-10 resize-none"></textarea>
+            </div>
           </FormField>
         </div>
 
         <!-- ========== STEP 5: Confirm ========== -->
         <div v-if="currentStep === 5" class="p-6 sm:p-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-1">Confirm Your Booking</h2>
-          <p class="text-gray-500 text-sm mb-6">Review your details before submitting.</p>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl">✓</div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Confirm Your Booking</h2>
+              <p class="text-gray-500 text-sm">Review your details before submitting</p>
+            </div>
+          </div>
 
-          <div class="space-y-4 text-sm">
-            <div class="bg-gray-50 rounded-xl p-4 space-y-3">
-              <div class="flex justify-between">
-                <span class="text-gray-500">Name</span>
-                <span class="font-medium">{{ form.guest_name }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-500">Phone</span>
-                <span class="font-medium">+91 {{ form.guest_phone }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-500">Address</span>
-                <span class="font-medium text-right max-w-[60%]">{{ form.address }}{{ form.area ? `, ${form.area}` : '' }}</span>
+          <div class="space-y-4">
+            <!-- Customer Details Card -->
+            <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-200">
+              <h3 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <UserIcon class="w-4 h-4" />
+                Customer Details
+              </h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Name</span>
+                  <span class="font-medium">{{ form.guest_name }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Phone</span>
+                  <span class="font-medium">+91 {{ form.guest_phone }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Email</span>
+                  <span class="font-medium">{{ form.guest_email || 'Not provided' }}</span>
+                </div>
               </div>
             </div>
 
-            <div class="bg-gray-50 rounded-xl p-4">
-              <p class="font-semibold text-gray-700 mb-3">Services</p>
-              <div v-for="svc in selectedServices" :key="svc.id" class="flex justify-between py-1">
-                <span class="text-gray-600">{{ svc.name }}</span>
-                <span class="font-medium">₹{{ svc.price }}</span>
-              </div>
-              <div class="border-t border-gray-200 mt-3 pt-3 flex justify-between font-bold">
-                <span>Total Estimate</span>
-                <span class="text-blue-600">₹{{ totalPrice }}</span>
+            <!-- Address Card -->
+            <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-200">
+              <h3 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <HomeIcon class="w-4 h-4" />
+                Service Address
+              </h3>
+              <p class="text-sm text-gray-700">{{ fullAddress }}</p>
+            </div>
+
+            <!-- Services Card -->
+            <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-200">
+              <h3 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <WrenchIcon class="w-4 h-4" />
+                Selected Services
+              </h3>
+              <div class="space-y-2">
+                <div v-for="svc in selectedServices" :key="svc.id" 
+                     class="flex justify-between text-sm py-1 border-b border-gray-100 last:border-0">
+                  <span class="text-gray-600">{{ svc.name }}</span>
+                  <span class="font-medium">₹{{ svc.price }}</span>
+                </div>
+                <div class="flex justify-between pt-2 font-bold text-lg">
+                  <span>Total Estimate</span>
+                  <span class="text-blue-600">₹{{ totalPrice }}</span>
+                </div>
               </div>
             </div>
 
-            <div class="bg-blue-50 rounded-xl p-4 flex items-center gap-3">
-              <span class="text-2xl">📅</span>
-              <div>
-                <p class="font-semibold text-blue-900">{{ formattedDate }}</p>
-                <p class="text-blue-700 text-xs">{{ form.time_slot }}</p>
+            <!-- Date & Time Card -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
+                  📅
+                </div>
+                <div class="flex-1">
+                  <p class="font-semibold text-blue-900">{{ formattedDate }}</p>
+                  <p class="text-blue-700 text-sm flex items-center gap-1 mt-1">
+                    <ClockIcon class="w-4 h-4" />
+                    {{ form.time_slot }}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <p class="text-xs text-gray-400 text-center">
-              * Final price may vary based on diagnosis. We'll confirm via SMS.
+            <!-- Notes if any -->
+            <div v-if="form.customer_notes" class="bg-gray-50 rounded-xl p-4 text-sm">
+              <p class="text-gray-500 italic">"{{ form.customer_notes }}"</p>
+            </div>
+
+            <p class="text-xs text-gray-400 text-center pt-2">
+              <InformationCircleIcon class="w-4 h-4 inline mr-1" />
+              Final price may vary based on on-site diagnosis. We'll confirm via SMS.
             </p>
           </div>
         </div>
 
         <!-- ========== SUCCESS ========== -->
-        <div v-if="bookingSuccess" class="p-6 sm:p-8 text-center">
-          <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-            ✅
+        <div v-if="bookingSuccess" class="p-6 sm:p-8 text-center animate-fade-in-up">
+          <div class="relative mb-6">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto text-5xl animate-bounce-slow">
+              ✅
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-32 h-32 bg-green-200 rounded-full animate-ping opacity-20"></div>
+            </div>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900">Booking Received!</h2>
+          
+          <h2 class="text-3xl font-bold text-gray-900">Booking Confirmed!</h2>
           <p class="text-gray-500 mt-2">Your booking ID is:</p>
-          <p class="text-3xl font-extrabold text-blue-600 my-3 font-mono">{{ bookingNumber }}</p>
-          <p class="text-sm text-gray-600">
-            You'll receive an SMS confirmation on +91 {{ form.guest_phone }} shortly.
-          </p>
-          <div class="mt-6 space-y-3">
-            <a :href="`/track/${bookingNumber}`"
-               class="block w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
-              Track Your Booking
-            </a>
-            <a href="/"
-               class="block w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
-              Back to Home
-            </a>
+          
+          <div class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl inline-block">
+            <p class="text-3xl font-extrabold text-blue-600 font-mono tracking-wider">{{ bookingNumber }}</p>
+          </div>
+          
+          <div class="mt-6 space-y-3 max-w-sm mx-auto">
+            <div class="bg-green-50 rounded-xl p-3 text-sm text-green-700 flex items-center gap-2">
+              <CheckCircleIcon class="w-5 h-5 flex-shrink-0" />
+              <span>SMS confirmation sent to +91 {{ form.guest_phone }}</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <a :href="`/track/${bookingNumber}`"
+                 class="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                <TruckIcon class="w-4 h-4" />
+                Track Booking
+              </a>
+              <a href="/"
+                 class="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+                <HomeIcon class="w-4 h-4" />
+                Home
+              </a>
+            </div>
+            
+            <button @click="shareBooking" 
+                    class="w-full flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 text-sm font-medium">
+              <ShareIcon class="w-4 h-4" />
+              Share booking details
+            </button>
           </div>
         </div>
 
@@ -282,26 +515,60 @@
         <div v-if="!bookingSuccess"
              class="px-6 sm:px-8 py-5 bg-gray-50 border-t border-gray-100 flex justify-between gap-4">
           <button v-if="currentStep > 1" @click="prevStep"
-                  class="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors">
-            ← Back
+                  class="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors rounded-lg hover:bg-gray-100">
+            <ArrowLeftIcon class="w-4 h-4" />
+            Back
           </button>
           <div v-else></div>
 
-          <button v-if="currentStep < totalSteps" @click="nextStep" :disabled="!canProceed"
-                  :class="[
-                    'flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all',
-                    canProceed
-                      ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed',
-                  ]">
-            Continue →
-          </button>
+          <div class="flex gap-3">
+            <button v-if="currentStep < totalSteps" @click="nextStep" :disabled="!canProceed"
+                    :class="[
+                      'flex items-center gap-2 px-6 py-2 rounded-xl font-semibold transition-all',
+                      canProceed
+                        ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+                    ]">
+              Continue
+              <ArrowRightIcon class="w-4 h-4" />
+            </button>
 
-          <button v-else @click="submitBooking" :disabled="submitting"
-                  class="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all disabled:opacity-60">
-            {{ submitting ? 'Submitting...' : 'Confirm Booking ✓' }}
-          </button>
+            <button v-else @click="submitBooking" :disabled="submitting"
+                    class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60">
+              <span v-if="submitting">
+                <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Submitting...
+              </span>
+              <span v-else class="flex items-center gap-2">
+                Confirm Booking
+                <CheckIcon class="w-4 h-4" />
+              </span>
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-gray-400">
+        <span class="flex items-center gap-1">
+          <LockClosedIcon class="w-3 h-3" />
+          Secure Booking
+        </span>
+        <span class="flex items-center gap-1">
+          <ShieldCheckIcon class="w-3 h-3" />
+          No Hidden Charges
+        </span>
+        <span class="flex items-center gap-1">
+          <ClockIcon class="w-3 h-3" />
+          30-Day Warranty
+        </span>
+        <span class="flex items-center gap-1">
+          <ChatBubbleLeftRightIcon class="w-3 h-3" />
+          24/7 Support
+        </span>
       </div>
     </div>
   </div>
@@ -313,6 +580,30 @@ import { Head } from '@inertiajs/vue3'
 import axios from 'axios'
 import AppHeader from '@/components/Landing/AppHeader.vue'
 import FormField  from '@/components/Shared/FormField.vue'
+import {
+  UserIcon,
+  EnvelopeIcon,
+  UserCircleIcon,
+  ClockIcon,
+  MapPinIcon,
+  HomeIcon,
+  BuildingOfficeIcon,
+  CalendarIcon,
+  DocumentTextIcon,
+  WrenchIcon,
+  ShoppingBagIcon,
+  ExclamationCircleIcon,
+  CheckCircleIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  LockClosedIcon,
+  ShieldCheckIcon,
+  ChatBubbleLeftRightIcon,
+  TruckIcon,
+  ShareIcon,
+  InformationCircleIcon
+} from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   categories: { type: Array, default: () => [] },
@@ -320,7 +611,7 @@ const props = defineProps({
 
 const currentStep = ref(1)
 const totalSteps  = 5
-const stepLabels  = ['Contact Info', 'Services', 'Location', 'Date & Time', 'Confirm']
+const stepLabels  = ['Contact', 'Services', 'Location', 'Date', 'Confirm']
 
 const form = ref({
   guest_name: '', guest_phone: '', guest_email: '',
@@ -365,16 +656,27 @@ const formattedDate = computed(() => {
   })
 })
 
+const fullAddress = computed(() => {
+  const parts = [form.value.address, form.value.area, form.value.pincode].filter(Boolean)
+  return parts.join(', ')
+})
+
 const availableDates = computed(() => {
   const dates = []
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  
   for (let i = 0; i < 14; i++) {
     const d = new Date()
     d.setDate(d.getDate() + i)
+    d.setHours(0, 0, 0, 0)
+    
     dates.push({
       value:   d.toISOString().split('T')[0],
       day:     d.toLocaleDateString('en-IN', { weekday: 'short' }),
       dateNum: d.getDate(),
       month:   d.toLocaleDateString('en-IN', { month: 'short' }),
+      isPast: d < today,
     })
   }
   return dates
@@ -383,10 +685,18 @@ const availableDates = computed(() => {
 const canProceed = computed(() => {
   if (currentStep.value === 1) return form.value.guest_name.trim() && form.value.guest_phone.length === 10
   if (currentStep.value === 2) return form.value.services.length > 0
-  if (currentStep.value === 3) return form.value.address.trim() && form.value.latitude
+  if (currentStep.value === 3) return form.value.address.trim() && form.value.pincode?.length === 6
   if (currentStep.value === 4) return form.value.booking_date && form.value.time_slot
   return true
 })
+
+// Progress line styling
+const getProgressLineClass = (index, lineIndex) => {
+  const stepNum = index + 1
+  if (currentStep > stepNum) return 'bg-green-500'
+  if (currentStep === stepNum && lineIndex === 1) return 'bg-blue-500'
+  return 'bg-gray-200'
+}
 
 // ---- Methods ----
 function toggleService(service) {
@@ -410,26 +720,38 @@ async function detectLocation() {
   }
   detectingLocation.value = true
   locationError.value = ''
+  
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
       form.value.latitude  = pos.coords.latitude
       form.value.longitude = pos.coords.longitude
-      detectingLocation.value = false
-      locationValidated.value = true
       await reverseGeocode(pos.coords.latitude, pos.coords.longitude)
-    },
-    () => {
+      locationValidated.value = true
+      locationError.value = ''
       detectingLocation.value = false
-      locationError.value = 'Could not detect location. Please enter your address manually.'
     },
-    { timeout: 10000 }
+    (error) => {
+      detectingLocation.value = false
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          locationError.value = 'Location permission denied. Please enter address manually.'
+          break
+        case error.POSITION_UNAVAILABLE:
+          locationError.value = 'Location information unavailable.'
+          break
+        case error.TIMEOUT:
+          locationError.value = 'Location request timed out.'
+          break
+        default:
+          locationError.value = 'Could not detect location.'
+      }
+    },
+    { timeout: 10000, enableHighAccuracy: true }
   )
 }
 
 async function reverseGeocode(lat, lng) {
   try {
-    // Use fetch() with credentials:'omit' — axios.defaults.withCredentials must NOT apply
-    // to external APIs like Nominatim (causes CORS preflight failure)
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
     const res  = await fetch(url, {
       credentials: 'omit',
@@ -437,10 +759,19 @@ async function reverseGeocode(lat, lng) {
     })
     const data = await res.json()
     const addr = data.address ?? {}
-    form.value.address = [addr.road, addr.suburb || addr.neighbourhood].filter(Boolean).join(', ')
-    form.value.area    = addr.suburb || addr.neighbourhood || addr.county || ''
-    form.value.pincode = addr.postcode || ''
-  } catch { /* silent fail */ }
+    
+    // Build address components
+    const road = addr.road || addr.pedestrian || ''
+    const suburb = addr.suburb || addr.neighbourhood || addr.suburb || ''
+    const city = addr.city || addr.town || addr.village || ''
+    const postcode = addr.postcode || ''
+    
+    form.value.address = [road, suburb, city].filter(Boolean).join(', ')
+    form.value.area    = suburb || city || ''
+    form.value.pincode = postcode
+  } catch { 
+    // Silent fail - user can enter manually
+  }
 }
 
 async function selectDate(date) {
@@ -449,7 +780,10 @@ async function selectDate(date) {
   loadingSlots.value      = true
   try {
     const res = await axios.get(`/api/v1/bookings/slots/${date}`)
-    timeSlots.value = res.data.slots ?? []
+    timeSlots.value = (res.data.slots ?? []).map(slot => ({
+      ...slot,
+      label: slot.slot.replace('-', ' – ') // Format: 09:00 – 11:00
+    }))
   } catch {
     timeSlots.value = []
   } finally {
@@ -457,8 +791,23 @@ async function selectDate(date) {
   }
 }
 
-function nextStep() { if (canProceed.value) currentStep.value++ }
-function prevStep()  { if (currentStep.value > 1) currentStep.value-- }
+function validatePincode(e) {
+  form.value.pincode = e.target.value.replace(/\D/g, '').slice(0, 6)
+}
+
+function nextStep() { 
+  if (canProceed.value) {
+    currentStep.value++
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+function prevStep() { 
+  if (currentStep.value > 1) {
+    currentStep.value--
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
 
 async function submitBooking() {
   submitting.value = true
@@ -467,6 +816,8 @@ async function submitBooking() {
     const res = await axios.post('/api/v1/bookings/quick', form.value)
     bookingNumber.value  = res.data.booking_number
     bookingSuccess.value = true
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    
     if (window.dataLayer) {
       window.dataLayer.push({
         event: 'booking_completed',
@@ -478,6 +829,8 @@ async function submitBooking() {
     if (err.response?.status === 422) {
       errors.value  = err.response.data.errors ?? {}
       currentStep.value = 1
+    } else {
+      alert('Something went wrong. Please try again.')
     }
   } finally {
     submitting.value = false
@@ -494,12 +847,134 @@ function validateField(field) {
       ? 'Name is required.' : undefined
   }
 }
+
+function shareBooking() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'My Booking with Chennai Smart Care',
+      text: `Booking #${bookingNumber.value} confirmed. Track at: ${window.location.origin}/track/${bookingNumber.value}`,
+    })
+  } else {
+    navigator.clipboard.writeText(`${window.location.origin}/track/${bookingNumber.value}`)
+    alert('Booking link copied to clipboard!')
+  }
+}
 </script>
 
 <style scoped>
 .form-input {
   @apply w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400
          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-         transition-shadow text-sm bg-white;
+         transition-all duration-200 text-sm bg-white;
+}
+
+.form-input:hover {
+  @apply border-gray-400;
+}
+
+.form-input:focus {
+  @apply shadow-lg shadow-blue-100;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 2s ease-in-out infinite;
+}
+
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Input group focus effect */
+.group:focus-within span {
+  @apply border-blue-500 ring-1 ring-blue-500;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .form-input {
+    @apply py-2.5;
+  }
 }
 </style>

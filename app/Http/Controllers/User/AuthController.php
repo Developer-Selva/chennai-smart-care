@@ -73,4 +73,53 @@ class AuthController extends Controller
 
         return redirect()->route('home');
     }
+
+    // ── Profile ───────────────────────────────────────────────
+
+    public function profile(): Response
+    {
+        return Inertia::render('User/Profile', [
+            'user' => auth('web')->user(),
+        ]);
+    }
+
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $user = auth('web')->user();
+
+        $data = $request->validate([
+            'name'             => 'required|string|max:100',
+            'email'            => 'nullable|email|unique:users,email,' . $user->id,
+            'phone'            => 'required|string|regex:/^[6-9]\d{9}$/|unique:users,phone,' . $user->id,
+            'address'          => 'nullable|string|max:500',
+            'city'             => 'nullable|string|max:100',
+            'pincode'          => 'nullable|string|max:10',
+            'current_password' => 'nullable|string',
+            'password'         => ['nullable', 'confirmed', Password::min(8)],
+        ]);
+
+        // Verify current password if trying to change password
+        if (! empty($data['password'])) {
+            if (empty($data['current_password']) || ! Hash::check($data['current_password'], $user->password)) {
+                return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+            }
+        }
+
+        $updateData = [
+            'name'    => $data['name'],
+            'email'   => $data['email'] ?? null,
+            'phone'   => $data['phone'],
+            'address' => $data['address'] ?? null,
+            'city'    => $data['city']    ?? null,
+            'pincode' => $data['pincode'] ?? null,
+        ];
+
+        if (! empty($data['password'])) {
+            $updateData['password'] = Hash::make($data['password']);
+        }
+
+        $user->update($updateData);
+
+        return back()->with('success', 'Profile updated successfully.');
+    }
 }
