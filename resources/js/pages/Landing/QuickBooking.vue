@@ -63,7 +63,7 @@
                 </div>
                 <input v-model="form.guest_name" type="text" placeholder="e.g., Rajesh Kumar"
                        class="form-input pl-10" @blur="validateField('guest_name')" 
-                       :class="{ 'border-red-300 focus:ring-red-500': errors.guest_name }" style="padding-left: 35px;"/>
+                       :class="{ 'border-red-300 focus:ring-red-500': errors.guest_name }" />
               </div>
             </FormField>
 
@@ -85,7 +85,7 @@
                   <EnvelopeIcon class="h-5 w-5 text-gray-400" />
                 </div>
                 <input v-model="form.guest_email" type="email" placeholder="you@example.com" 
-                       class="form-input pl-10" style="padding-left: 35px;"/>
+                       class="form-input pl-10" />
               </div>
             </FormField>
           </div>
@@ -200,7 +200,7 @@
           </p>
         </div>
 
-        <!-- ========== STEP 3: Location ========== -->
+        <!-- ========== STEP 3: Location (Enhanced with Accurate GPS) ========== -->
         <div v-if="currentStep === 3" class="p-6 sm:p-8">
           <div class="flex items-center gap-3 mb-6">
             <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl">📍</div>
@@ -210,18 +210,50 @@
             </div>
           </div>
 
-          <button @click="detectLocation" :disabled="detectingLocation"
-                  class="w-full group flex items-center justify-center gap-3 py-4 px-4 border-2 border-dashed border-blue-300 text-blue-600 rounded-xl hover:bg-blue-50 transition-all mb-6 font-medium relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <MapPinIcon class="w-5 h-5 group-hover:animate-bounce" />
-            <span>{{ detectingLocation ? 'Detecting your location...' : 'Use My Current Location' }}</span>
-            <span v-if="detectingLocation" class="ml-2">
-              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </span>
-          </button>
+          <!-- Enhanced GPS Detection Button with Accuracy Indicator -->
+          <div class="space-y-3 mb-6">
+            <button @click="startAccurateLocationDetection" :disabled="detectingLocation"
+                    class="w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg">
+              <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="relative flex items-center justify-center gap-3">
+                <GlobeAltIcon class="w-5 h-5 animate-pulse" />
+                <span class="font-semibold">{{ detectingLocation ? 'Getting precise location...' : 'Use Precise GPS Location' }}</span>
+                <span v-if="detectingLocation" class="ml-2">
+                  <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+              </div>
+            </button>
+
+            <!-- GPS Accuracy Progress -->
+            <div v-if="detectingLocation" class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-blue-700">Acquiring GPS Signal</span>
+                <span class="text-xs font-semibold text-blue-600">{{ gpsProgress }}%</span>
+              </div>
+              <div class="h-2 bg-blue-100 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-600 rounded-full transition-all duration-300" 
+                     :style="{ width: gpsProgress + '%' }"></div>
+              </div>
+              <p class="text-xs text-blue-600 mt-2 flex items-center gap-1">
+                <SignalIcon class="w-3 h-3" />
+                {{ gpsStatusMessage }}
+              </p>
+            </div>
+
+            <!-- Accuracy Badge when location is detected -->
+            <div v-if="form.latitude && gpsAccuracy" 
+                 class="flex items-center gap-2 text-sm"
+                 :class="accuracyClass">
+              <div class="w-2 h-2 rounded-full" :class="accuracyDotClass"></div>
+              <span>Accuracy: ±{{ gpsAccuracy }} meters</span>
+              <span v-if="gpsAccuracy <= 10" class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">High Precision</span>
+              <span v-else-if="gpsAccuracy <= 50" class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">Medium Precision</span>
+              <span v-else class="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">Low Precision</span>
+            </div>
+          </div>
 
           <div class="flex items-center gap-3 mb-4">
             <div class="flex-1 border-t border-gray-200"></div>
@@ -237,7 +269,7 @@
                 </div>
                 <textarea v-model="form.address" rows="3"
                           placeholder="House/Flat No, Street, Locality..."
-                          class="form-input pl-10 resize-none" style="padding-left: 35px;"></textarea>
+                          class="form-input pl-10 resize-none"></textarea>
               </div>
             </FormField>
             
@@ -247,7 +279,7 @@
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <BuildingOfficeIcon class="h-5 w-5 text-gray-400" />
                   </div>
-                  <input v-model="form.area" type="text" placeholder="Anna Nagar" class="form-input pl-10" style="padding-left: 35px;"/>
+                  <input v-model="form.area" type="text" placeholder="Anna Nagar" class="form-input pl-10" />
                 </div>
               </FormField>
               
@@ -257,22 +289,28 @@
                     <MapPinIcon class="h-5 w-5 text-gray-400" />
                   </div>
                   <input v-model="form.pincode" type="text" maxlength="6" placeholder="600001" 
-                         class="form-input pl-10" @input="validatePincode" style="padding-left: 35px;"/>
+                         class="form-input pl-10" @input="validatePincode" />
                 </div>
               </FormField>
             </div>
           </div>
 
-          <!-- Location validation feedback -->
+          <!-- Location validation feedback with accuracy info -->
           <Transition
             enter-active-class="transform transition duration-300 ease-out"
             enter-from-class="opacity-0 translate-y-2"
             enter-to-class="opacity-100 translate-y-0"
           >
             <div v-if="locationValidated" 
-                 class="mt-4 p-3 bg-green-50 rounded-xl border border-green-200 flex items-center gap-2 text-green-700">
-              <CheckCircleIcon class="w-5 h-5 flex-shrink-0" />
-              <span class="text-sm">✅ Location is within our service area</span>
+                 class="mt-4 p-3 bg-green-50 rounded-xl border border-green-200">
+              <div class="flex items-center gap-2 text-green-700">
+                <CheckCircleIcon class="w-5 h-5 flex-shrink-0" />
+                <span class="text-sm">✅ Location is within our service area</span>
+              </div>
+              <div v-if="gpsAccuracy" class="mt-2 text-xs text-green-600 flex items-center gap-2">
+                <MapPinIcon class="w-3 h-3" />
+                <span>Coordinates: {{ form.latitude?.toFixed(6) }}, {{ form.longitude?.toFixed(6) }}</span>
+              </div>
             </div>
           </Transition>
           
@@ -287,6 +325,20 @@
               <span class="text-sm">{{ locationError }}</span>
             </div>
           </Transition>
+
+          <!-- Map Preview (Optional) -->
+          <div v-if="form.latitude && form.longitude" class="mt-4">
+            <button @click="showMap = !showMap" 
+                    class="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
+              <MapIcon class="w-4 h-4" />
+              {{ showMap ? 'Hide map' : 'Show on map' }}
+            </button>
+            <div v-if="showMap" class="mt-2 h-48 bg-gray-100 rounded-xl overflow-hidden">
+              <!-- Embed map here - you can use Google Maps or OpenStreetMap -->
+              <img :src="`https://maps.googleapis.com/maps/api/staticmap?center=${form.latitude},${form.longitude}&zoom=15&size=600x200&markers=color:red%7C${form.latitude},${form.longitude}&key=YOUR_API_KEY`" 
+                   alt="Location map" class="w-full h-full object-cover">
+            </div>
+          </div>
         </div>
 
         <!-- ========== STEP 4: Date & Time ========== -->
@@ -410,13 +462,19 @@
               </div>
             </div>
 
-            <!-- Address Card -->
+            <!-- Address Card with GPS Info -->
             <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-200">
               <h3 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <HomeIcon class="w-4 h-4" />
                 Service Address
               </h3>
               <p class="text-sm text-gray-700">{{ fullAddress }}</p>
+              <div v-if="form.latitude && gpsAccuracy" class="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                <GlobeAltIcon class="w-3 h-3" />
+                <span>GPS: ±{{ gpsAccuracy }}m accuracy</span>
+                <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span>Source: {{ form.location_source || 'GPS' }}</span>
+              </div>
             </div>
 
             <!-- Services Card -->
@@ -575,7 +633,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import axios from 'axios'
 import AppHeader from '@/components/Landing/AppHeader.vue'
@@ -602,7 +660,10 @@ import {
   ChatBubbleLeftRightIcon,
   TruckIcon,
   ShareIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  GlobeAltIcon,
+  SignalIcon,
+  MapIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -617,6 +678,8 @@ const form = ref({
   guest_name: '', guest_phone: '', guest_email: '',
   address: '', area: '', pincode: '',
   latitude: null, longitude: null,
+  location_accuracy: null, 
+  location_source: null,
   services: [],
   booking_date: '', time_slot: '', customer_notes: '',
 })
@@ -625,6 +688,13 @@ const errors          = ref({})
 const detectingLocation = ref(false)
 const locationValidated = ref(false)
 const locationError     = ref('')
+const gpsAccuracy       = ref(null)
+const gpsProgress       = ref(0)
+const gpsStatusMessage  = ref('Initializing GPS...')
+const showMap           = ref(false)
+let   watchId           = null
+let   progressInterval  = null
+
 const loadingSlots      = ref(false)
 const timeSlots         = ref([])
 const submitting        = ref(false)
@@ -685,9 +755,24 @@ const availableDates = computed(() => {
 const canProceed = computed(() => {
   if (currentStep.value === 1) return form.value.guest_name.trim() && form.value.guest_phone.length === 10
   if (currentStep.value === 2) return form.value.services.length > 0
-  if (currentStep.value === 3) return form.value.address.trim() && form.value.pincode?.length === 6
+  if (currentStep.value === 3) return form.value.address.trim() && form.value.latitude && form.value.longitude
   if (currentStep.value === 4) return form.value.booking_date && form.value.time_slot
   return true
+})
+
+// Accuracy classes for styling
+const accuracyClass = computed(() => {
+  if (!gpsAccuracy.value) return 'text-gray-500'
+  if (gpsAccuracy.value <= 10) return 'text-green-600'
+  if (gpsAccuracy.value <= 50) return 'text-yellow-600'
+  return 'text-orange-600'
+})
+
+const accuracyDotClass = computed(() => {
+  if (!gpsAccuracy.value) return 'bg-gray-400'
+  if (gpsAccuracy.value <= 10) return 'bg-green-500'
+  if (gpsAccuracy.value <= 50) return 'bg-yellow-500'
+  return 'bg-orange-500'
 })
 
 // Progress line styling
@@ -698,7 +783,156 @@ const getProgressLineClass = (index, lineIndex) => {
   return 'bg-gray-200'
 }
 
-// ---- Methods ----
+// ---- Enhanced Location Methods ----
+function startAccurateLocationDetection() {
+  if (!navigator.geolocation) {
+    locationError.value = 'Geolocation is not supported by your browser.'
+    return
+  }
+
+  detectingLocation.value = true
+  locationError.value = ''
+  gpsProgress.value = 0
+  gpsStatusMessage.value = 'Requesting location permission...'
+
+  // Simulate progress for better UX
+  progressInterval = setInterval(() => {
+    if (gpsProgress.value < 90 && detectingLocation.value) {
+      gpsProgress.value += 5
+      if (gpsProgress.value === 30) gpsStatusMessage.value = 'Acquiring satellite signals...'
+      if (gpsProgress.value === 60) gpsStatusMessage.value = 'Calculating precise position...'
+      if (gpsProgress.value === 80) gpsStatusMessage.value = 'Almost there...'
+    }
+  }, 300)
+
+  // Start watching position for continuous updates
+  watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      // Update with each new reading for better accuracy
+      form.value.latitude = pos.coords.latitude
+      form.value.longitude = pos.coords.longitude
+      gpsAccuracy.value = Math.round(pos.coords.accuracy)
+      form.value.location_accuracy = gpsAccuracy.value
+      form.value.location_source = 'gps_high_accuracy'
+
+      // Update progress based on accuracy
+      if (pos.coords.accuracy <= 10) {
+        gpsProgress.value = 100
+        gpsStatusMessage.value = 'High precision location acquired!'
+        stopLocationDetection() // Got good enough accuracy
+      } else if (pos.coords.accuracy <= 30) {
+        gpsProgress.value = 90
+        gpsStatusMessage.value = 'Good accuracy, refining...'
+      } else {
+        gpsProgress.value = 70
+        gpsStatusMessage.value = 'Low accuracy, waiting for better signal...'
+      }
+    },
+    (error) => {
+      handleLocationError(error)
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 0
+    }
+  )
+
+  // Also get a single high-accuracy position as fallback
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      form.value.latitude = pos.coords.latitude
+      form.value.longitude = pos.coords.longitude
+      gpsAccuracy.value = Math.round(pos.coords.accuracy)
+      form.value.location_accuracy = gpsAccuracy.value
+      form.value.location_source = 'gps_single'
+      
+      await reverseGeocode(pos.coords.latitude, pos.coords.longitude)
+      locationValidated.value = true
+      locationError.value = ''
+      
+      // Stop watching if we already have good accuracy
+      if (pos.coords.accuracy <= 30) {
+        stopLocationDetection()
+      }
+    },
+    handleLocationError,
+    {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 0
+    }
+  )
+}
+
+function stopLocationDetection() {
+  if (watchId) {
+    navigator.geolocation.clearWatch(watchId)
+    watchId = null
+  }
+  if (progressInterval) {
+    clearInterval(progressInterval)
+    progressInterval = null
+  }
+  detectingLocation.value = false
+}
+
+function handleLocationError(error) {
+  stopLocationDetection()
+  
+  switch(error.code) {
+    case error.PERMISSION_DENIED:
+      locationError.value = 'Location permission denied. Please enter address manually.'
+      break
+    case error.POSITION_UNAVAILABLE:
+      locationError.value = 'GPS signal unavailable. Please check your location settings.'
+      break
+    case error.TIMEOUT:
+      locationError.value = 'GPS timed out. Please try again or enter manually.'
+      break
+    default:
+      locationError.value = 'Could not detect location. Please enter address manually.'
+  }
+}
+
+async function reverseGeocode(lat, lng) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`
+    const res = await fetch(url, {
+      credentials: 'omit',
+      headers: { 
+        'Accept': 'application/json',
+        'User-Agent': 'ChennaiSmartCare/1.0'
+      },
+    })
+    const data = await res.json()
+    const addr = data.address ?? {}
+    
+    // Build comprehensive address
+    const road = addr.road || addr.pedestrian || addr.street || ''
+    const suburb = addr.suburb || addr.neighbourhood || addr.suburb || ''
+    const city = addr.city || addr.town || addr.village || addr.county || ''
+    const postcode = addr.postcode || ''
+    const state = addr.state || ''
+    
+    // Format address nicely
+    const addressParts = [road, suburb, city, state].filter(Boolean)
+    form.value.address = addressParts.join(', ')
+    form.value.area = suburb || city || ''
+    form.value.pincode = postcode
+    
+  } catch (error) {
+    console.warn('Reverse geocoding failed:', error)
+    // Still mark as validated even if reverse geocoding fails
+    form.value.address = `Location at ${lat.toFixed(6)}, ${lng.toFixed(6)}`
+  }
+}
+
+function validatePincode(e) {
+  form.value.pincode = e.target.value.replace(/\D/g, '').slice(0, 6)
+}
+
+// ---- Service Methods ----
 function toggleService(service) {
   const idx = form.value.services.findIndex(s => s.id === service.id)
   if (idx >= 0) {
@@ -713,67 +947,7 @@ function toggleService(service) {
   }
 }
 
-async function detectLocation() {
-  if (!navigator.geolocation) {
-    locationError.value = 'Geolocation is not supported by your browser.'
-    return
-  }
-  detectingLocation.value = true
-  locationError.value = ''
-  
-  navigator.geolocation.getCurrentPosition(
-    async (pos) => {
-      form.value.latitude  = pos.coords.latitude
-      form.value.longitude = pos.coords.longitude
-      await reverseGeocode(pos.coords.latitude, pos.coords.longitude)
-      locationValidated.value = true
-      locationError.value = ''
-      detectingLocation.value = false
-    },
-    (error) => {
-      detectingLocation.value = false
-      switch(error.code) {
-        case error.PERMISSION_DENIED:
-          locationError.value = 'Location permission denied. Please enter address manually.'
-          break
-        case error.POSITION_UNAVAILABLE:
-          locationError.value = 'Location information unavailable.'
-          break
-        case error.TIMEOUT:
-          locationError.value = 'Location request timed out.'
-          break
-        default:
-          locationError.value = 'Could not detect location.'
-      }
-    },
-    { timeout: 10000, enableHighAccuracy: true }
-  )
-}
-
-async function reverseGeocode(lat, lng) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-    const res  = await fetch(url, {
-      credentials: 'omit',
-      headers: { 'Accept': 'application/json' },
-    })
-    const data = await res.json()
-    const addr = data.address ?? {}
-    
-    // Build address components
-    const road = addr.road || addr.pedestrian || ''
-    const suburb = addr.suburb || addr.neighbourhood || addr.suburb || ''
-    const city = addr.city || addr.town || addr.village || ''
-    const postcode = addr.postcode || ''
-    
-    form.value.address = [road, suburb, city].filter(Boolean).join(', ')
-    form.value.area    = suburb || city || ''
-    form.value.pincode = postcode
-  } catch { 
-    // Silent fail - user can enter manually
-  }
-}
-
+// ---- Date/Time Methods ----
 async function selectDate(date) {
   form.value.booking_date = date
   form.value.time_slot    = ''
@@ -782,7 +956,7 @@ async function selectDate(date) {
     const res = await axios.get(`/api/v1/bookings/slots/${date}`)
     timeSlots.value = (res.data.slots ?? []).map(slot => ({
       ...slot,
-      label: slot.slot.replace('-', ' – ') // Format: 09:00 – 11:00
+      label: slot.slot.replace('-', ' – ')
     }))
   } catch {
     timeSlots.value = []
@@ -791,10 +965,7 @@ async function selectDate(date) {
   }
 }
 
-function validatePincode(e) {
-  form.value.pincode = e.target.value.replace(/\D/g, '').slice(0, 6)
-}
-
+// ---- Navigation ----
 function nextStep() { 
   if (canProceed.value) {
     currentStep.value++
@@ -809,6 +980,7 @@ function prevStep() {
   }
 }
 
+// ---- Submission ----
 async function submitBooking() {
   submitting.value = true
   errors.value     = {}
@@ -837,6 +1009,7 @@ async function submitBooking() {
   }
 }
 
+// ---- Validation ----
 function validateField(field) {
   if (field === 'guest_phone') {
     errors.value.guest_phone = form.value.guest_phone.length !== 10
@@ -848,6 +1021,7 @@ function validateField(field) {
   }
 }
 
+// ---- Share ----
 function shareBooking() {
   if (navigator.share) {
     navigator.share({
@@ -859,6 +1033,11 @@ function shareBooking() {
     alert('Booking link copied to clipboard!')
   }
 }
+
+// Clean up on component unmount
+onUnmounted(() => {
+  stopLocationDetection()
+})
 </script>
 
 <style scoped>
@@ -874,6 +1053,11 @@ function shareBooking() {
 
 .form-input:focus {
   @apply shadow-lg shadow-blue-100;
+}
+
+/* Icon padding */
+.pl-10 {
+  padding-left: 2.5rem;
 }
 
 /* Animations */
@@ -944,11 +1128,6 @@ function shareBooking() {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-/* Input group focus effect */
-.group:focus-within span {
-  @apply border-blue-500 ring-1 ring-blue-500;
 }
 
 /* Custom scrollbar */

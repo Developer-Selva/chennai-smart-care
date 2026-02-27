@@ -13,7 +13,7 @@ class Booking extends Model
     protected $fillable = [
         'booking_number', 'user_id', 'technician_id',
         'guest_name', 'guest_phone', 'guest_email',
-        'address', 'area', 'city', 'pincode', 'latitude', 'longitude',
+        'address', 'area', 'city', 'pincode', 'latitude', 'longitude', 'location_accuracy', 'location_source',
         'booking_date', 'booking_time', 'time_slot', 'status',
         'total_amount', 'discount_amount', 'final_amount',
         'customer_notes', 'admin_notes', 'technician_notes',
