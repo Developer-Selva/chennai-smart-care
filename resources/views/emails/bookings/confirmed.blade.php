@@ -50,7 +50,7 @@
 
 <div>
   <a href="{{ $trackUrl }}" class="btn">Track Booking</a>
-  <a href="https://wa.me/91{{ preg_replace('/\D/', '', $phone) }}?text=Hi%2C%20my%20booking%20is%20{{ $booking->booking_number }}" class="btn-outline">Chat on WhatsApp</a>
+  <a href="https://wa.me/{{ preg_replace('/\D/', '', $phone) }}?text=Hi%2C%20my%20booking%20is%20{{ $booking->booking_number }}" class="btn-outline">Chat on WhatsApp</a>
 </div>
 
 <hr class="divider" />

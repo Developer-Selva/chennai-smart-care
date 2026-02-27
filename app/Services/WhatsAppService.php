@@ -64,6 +64,16 @@ use Illuminate\Support\Facades\Log;
  *   "Hi {{1}}, we received your free consultation request for {{2}}.
  *    Our expert will call you within 2 hours (Mon-Sun 9AM-9PM).
  *    Urgent? Call +91 94449 00470"
+ *
+ * admin_booking_alert:
+ *   "🔔 *New Booking Alert!*
+ *    Booking #: {{1}}
+ *    Customer: {{2}}
+ *    Phone: {{3}}
+ *    Services: {{4}}
+ *    Date: {{5}} | Slot: {{6}}
+ *    Amount: ₹{{7}}
+ *    View: {{8}}"
  * ─────────────────────────────────────────────────────────────
  */
 class WhatsAppService
@@ -116,17 +126,189 @@ class WhatsAppService
             }
         }
 
-        $this->sendText($this->adminPhone,
-            "🔔 *New Booking!*\n\n" .
-            "📋 *#:* {$booking->booking_number}\n" .
-            "👤 *Customer:* {$booking->customer_name}\n" .
-            "📞 *Phone:* {$booking->customer_phone}\n" .
-            "🔧 *Services:* {$serviceList}\n" .
-            "📅 *Date:* {$date} | ⏰ {$booking->time_slot}\n" .
-            "📍 *Address:* {$booking->address}\n" .
-            "💰 *Amount:* ₹" . ($booking->total_amount ?? '—') . "\n\n" .
-            "👉 " . url("/admin/bookings/{$booking->id}")
-        );
+        // Send admin notification
+        $this->sendAdminBookingAlert($booking);
+    }
+
+    /**
+     * Send high-priority admin WhatsApp alert
+     */
+    private function sendAdminBookingAlert(Booking $booking): void
+    {
+        $serviceList = $booking->items->map(fn ($i) => $i->service_name)->implode(', ');
+        $date = \Carbon\Carbon::parse($booking->booking_date)->format('D, d M Y');
+        $amount = $booking->total_amount ?? '—';
+        $adminUrl = url("/admin/bookings/{$booking->id}");
+        
+        // Determine priority
+        $priorityEmoji = $this->getBookingPriority($booking);
+        $priorityTag = $this->getPriorityTag($booking);
+
+        if ($this->templatesApproved && $this->hasTemplate('admin_booking_alert')) {
+            $this->sendTemplate($this->adminPhone, 'admin_booking_alert', [
+                $booking->booking_number,
+                $booking->customer_name,
+                $booking->guest_phone ?? $booking->user?->phone ?? 'N/A',
+                $serviceList,
+                $date,
+                $booking->time_slot,
+                $amount,
+                $adminUrl,
+            ]);
+        } else {
+            // Enhanced admin message with priority indicators
+            $message = $this->buildAdminAlertMessage($booking, $priorityEmoji, $priorityTag);
+            $this->sendText($this->adminPhone, $message);
+        }
+
+        // For very high priority bookings, send a second alert with quick actions
+        if ($this->isHighPriority($booking)) {
+            $this->sendHighPriorityFollowUp($booking);
+        }
+    }
+
+    /**
+     * Build admin alert message
+     */
+    private function buildAdminAlertMessage(Booking $booking, string $priorityEmoji, string $priorityTag): string
+    {
+        $serviceList = $booking->items->map(fn ($i) => $i->service_name)->implode(', ');
+        $date = \Carbon\Carbon::parse($booking->booking_date)->format('D, d M Y');
+        $amount = $booking->total_amount ?? '—';
+        $adminUrl = url("/admin/bookings/{$booking->id}");
+        
+        // Check if urgent (same-day booking)
+        $urgentTag = $booking->booking_date->isToday() ? " 🔴 URGENT - SAME DAY" : "";
+        
+        // Check if customer is registered
+        $customerType = $booking->user_id ? "👤 Registered" : "🆕 Guest";
+
+        return "{$priorityEmoji} *NEW BOOKING ALERT!* {$priorityTag}{$urgentTag}\n\n" .
+               "📋 *#:* {$booking->booking_number}\n" .
+               "👤 *Customer:* {$booking->customer_name}\n" .
+               "📞 *Phone:* `{$booking->guest_phone}`\n" .
+               "🔧 *Services:* {$serviceList}\n" .
+               "📅 *Date:* {$date}\n" .
+               "⏰ *Slot:* {$booking->time_slot}\n" .
+               "📍 *Area:* {$booking->area}\n" .
+               "💰 *Amount:* ₹{$amount}\n" .
+               "🏷️ *Type:* {$customerType}\n\n" .
+               "⚡ *Quick Actions:*\n" .
+               "• 👨‍🔧 Assign: {$adminUrl}/assign\n" .
+               "• 📞 Call: `{$booking->guest_phone}`\n" .
+               "• 💬 WhatsApp: https://wa.me/{$booking->guest_phone}\n\n" .
+               "🔗 *View Full Details:*\n" .
+               "{$adminUrl}\n\n" .
+               "⏱️ *Booked:* {$booking->created_at->format('h:i A')}";
+    }
+
+    /**
+     * Send follow-up for high-priority bookings
+     */
+    private function sendHighPriorityFollowUp(Booking $booking): void
+    {
+        $message = "⚠️ *HIGH PRIORITY FOLLOW-UP*\n\n" .
+                   "Booking *#{$booking->booking_number}* requires immediate attention.\n\n" .
+                   "*Suggested Actions:*\n" .
+                   "1️⃣ Check technician availability\n" .
+                   "2️⃣ Contact customer immediately\n" .
+                   "3️⃣ Prepare required parts\n\n" .
+                   "Click to assign technician:\n" .
+                   url("/admin/bookings/{$booking->id}/assign");
+
+        $this->sendText($this->adminPhone, $message);
+    }
+
+    /**
+     * Get booking priority emoji
+     */
+    private function getBookingPriority(Booking $booking): string
+    {
+        if ($booking->booking_date->isToday()) {
+            return "🔴"; // Urgent - same day
+        }
+        
+        if ($booking->total_amount > 5000) {
+            return "💰"; // High value
+        }
+        
+        if ($booking->items->contains(fn($item) => str_contains($item->service_name, 'AC'))) {
+            return "❄️"; // AC repair (often urgent in Chennai)
+        }
+        
+        return "🟢"; // Normal
+    }
+
+    /**
+     * Get priority tag text
+     */
+    private function getPriorityTag(Booking $booking): string
+    {
+        $tags = [];
+        
+        if ($booking->booking_date->isToday()) {
+            $tags[] = "SAME DAY";
+        }
+        
+        if ($booking->total_amount > 5000) {
+            $tags[] = "HIGH VALUE";
+        }
+        
+        if ($booking->user_id && $booking->user->bookings()->count() > 5) {
+            $tags[] = "VIP";
+        }
+        
+        if ($booking->items->contains(fn($item) => str_contains($item->service_name, 'AC'))) {
+            $tags[] = "AC";
+        }
+        
+        return empty($tags) ? "NEW" : implode(" • ", $tags);
+    }
+
+    /**
+     * Check if booking is high priority
+     */
+    private function isHighPriority(Booking $booking): bool
+    {
+        // Same-day booking
+        if ($booking->booking_date->isToday()) {
+            return true;
+        }
+
+        // High-value booking
+        if ($booking->total_amount > 5000) {
+            return true;
+        }
+
+        // VIP customer (repeat customer)
+        if ($booking->user_id && $booking->user->bookings()->count() > 5) {
+            return true;
+        }
+
+        // AC repair in Chennai (urgent due to heat)
+        if ($booking->items->contains(fn($item) => str_contains($item->service_name, 'AC'))) {
+            return true;
+        }
+
+        // Urgent note indicators
+        $urgentKeywords = ['urgent', 'emergency', 'leak', 'not working', 'broken', 'hot'];
+        if ($booking->notes && collect($urgentKeywords)->contains(fn($keyword) => 
+            stripos($booking->notes, $keyword) !== false
+        )) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a specific template exists (you'd need to implement this based on your template management)
+     */
+    private function hasTemplate(string $templateName): bool
+    {
+        // This should check against your approved templates list
+        // For now, return false to use text fallback
+        return false;
     }
 
     public function sendBookingConfirmed(Booking $booking): void
@@ -150,6 +332,13 @@ class WhatsAppService
                 );
             }
         }
+
+        // Brief admin update
+        $this->sendText($this->adminPhone,
+            "✅ *Booking Confirmed*\n" .
+            "#{$booking->booking_number} | {$booking->customer_name}\n" .
+            "{$date} | {$booking->time_slot}"
+        );
     }
 
     public function sendTechnicianAssigned(Booking $booking): void
@@ -210,6 +399,12 @@ class WhatsAppService
                 );
             }
         }
+
+        $this->sendText($this->adminPhone,
+            "🎉 *Booking Completed*\n" .
+            "#{$booking->booking_number} | {$booking->customer_name}\n" .
+            "Amount: ₹{$amount}"
+        );
     }
 
     public function sendBookingRescheduled(Booking $booking): void
@@ -260,6 +455,12 @@ class WhatsAppService
                 );
             }
         }
+
+        $this->sendText($this->adminPhone,
+            "❌ *Booking Cancelled*\n" .
+            "#{$booking->booking_number} | {$booking->customer_name}\n" .
+            "Reason: {$reason}"
+        );
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -300,6 +501,10 @@ class WhatsAppService
             "👉 " . url("/admin/consultations/{$consultation->id}")
         );
     }
+
+    // ═══════════════════════════════════════════════════════════
+    //  ADDITIONAL NOTIFICATIONS
+    // ═══════════════════════════════════════════════════════════
 
     public function sendInvoice($invoice): void
     {
@@ -354,33 +559,25 @@ class WhatsAppService
         if (! $phone) return;
 
         $this->sendText($phone,
-            "🎉 *Congratulations! Free AMC Unlocked!*
-
-" .
+            "🎉 *Congratulations! Free AMC Unlocked!*\n\n" .
             "Hi {$user->name}, you've unlocked a *FREE Annual Maintenance Contract* " .
-            "by spending ₹5,000+ with Chennai Smart Care this year!
-
-" .
-            "✅ *AMC #:* {$amc->amc_number}
-" .
-            "📅 *Valid till:* " . \Carbon\Carbon::parse($amc->expires_at)->format('d M Y') . "
-
-" .
-            "*Your AMC Benefits:*
-" .
-            "🔧 2 free service calls/year
-" .
-            "💸 15% off on all repairs
-" .
-            "⚡ Priority booking — skip the queue
-
-" .
-            "View your AMC card in your dashboard:
-" .
-            url('/user/dashboard') . "
-
-" .
+            "by spending ₹5,000+ with Chennai Smart Care this year!\n\n" .
+            "✅ *AMC #:* {$amc->amc_number}\n" .
+            "📅 *Valid till:* " . \Carbon\Carbon::parse($amc->expires_at)->format('d M Y') . "\n\n" .
+            "*Your AMC Benefits:*\n" .
+            "🔧 2 free service calls/year\n" .
+            "💸 15% off on all repairs\n" .
+            "⚡ Priority booking — skip the queue\n\n" .
+            "View your AMC card in your dashboard:\n" .
+            url('/user/dashboard') . "\n\n" .
             "_Thank you for being a valued customer!_"
+        );
+
+        $this->sendText($this->adminPhone,
+            "🎁 *AMC Unlocked*\n" .
+            "User: {$user->name} | {$user->phone}\n" .
+            "AMC #: {$amc->amc_number}\n" .
+            "Expires: {$amc->expires_at->format('d M Y')}"
         );
     }
 
@@ -510,6 +707,7 @@ class WhatsAppService
         if (! $digits) return '';
         if (strlen($digits) === 12 && str_starts_with($digits, '91')) return $digits;
         if (strlen($digits) === 10) return '91' . $digits;
+        if (strlen($digits) === 11 && str_starts_with($digits, '0')) return '91' . substr($digits, 1);
         return $digits;
     }
 }

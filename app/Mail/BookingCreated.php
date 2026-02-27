@@ -13,19 +13,28 @@ class BookingCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public readonly Booking $booking) {}
+    public function __construct(
+        public readonly Booking $booking,
+        public bool $isAdminCopy = false // Flag to identify admin copy
+    ) {}
 
     public function envelope(): Envelope
     {
+        $subject = $this->isAdminCopy 
+            ? "🔔 NEW BOOKING: #{$this->booking->booking_number} | {$this->booking->customer_name}"
+            : "Booking Received — #{$this->booking->booking_number} | Chennai Smart Care";
+
         return new Envelope(
-            subject: "Booking Received — #{$this->booking->booking_number} | Chennai Smart Care",
+            subject: $subject,
         );
     }
 
     public function content(): Content
     {
+        $view = $this->isAdminCopy ? 'emails.bookings.admin-created' : 'emails.bookings.created';
+
         return new Content(
-            view: 'emails.bookings.created',
+            view: $view,
             with: [
                 'booking'      => $this->booking,
                 'customerName' => $this->booking->customer_name,
@@ -36,6 +45,7 @@ class BookingCreated extends Mailable
                 'trackUrl'     => route('booking.track', $this->booking->booking_number),
                 'bookingUrl'   => route('quick-booking'),
                 'phone'        => config('app.support_phone', '+91 94449 00470'),
+                'adminUrl'     => $this->isAdminCopy ? route('admin.bookings.show', $this->booking->id) : null,
             ],
         );
     }

@@ -100,11 +100,11 @@ QUEUE_CONNECTION=redis
 
 # Mail (use SES, Mailgun or SMTP)
 MAIL_MAILER=smtp
-MAIL_HOST=smtp.mailgun.org
-MAIL_PORT=587
-MAIL_USERNAME=your@mailgun.com
-MAIL_PASSWORD=your-mailgun-password
-MAIL_FROM_ADDRESS=noreply@yourdomain.com
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=chennaismartcarehomeservice@gmail.com
+MAIL_PASSWORD=fxixbuytkjjiydso
+MAIL_FROM_ADDRESS=chennaismartcarehomeservice@gmail.com
 MAIL_FROM_NAME="Chennai Smart Care"
 
 # SMS (Twilio or MSG91)
