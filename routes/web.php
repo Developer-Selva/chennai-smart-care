@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\QuickBookingController;
 */
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/services/{slug}', [LandingController::class, 'service'])->name('service.show');
+Route::get('/services/{slug}/{areaSlug}', [LandingController::class, 'serviceArea'])->name('service.area');
 Route::get('/about', [LandingController::class, 'about'])->name('about');
 Route::get('/contact', [LandingController::class, 'contact'])->name('contact');
 Route::get('/free-consultation', [LandingController::class, 'consultationPage'])->name('consultation');

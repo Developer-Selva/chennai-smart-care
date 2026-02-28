@@ -17,7 +17,7 @@
     <meta property="og:type" content="@yield('og_type', 'website')" />
     <meta property="og:title" content="@yield('og_title', config('app.name'))" />
     <meta property="og:description" content="@yield('og_description', 'Expert appliance repair in Chennai')" />
-    <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))" />
+    <meta property="og:image" content="@yield('og_image', asset('images/ac-washing-machine-refrigerator-service-repair-in-chennai.jpg'))" />
     <meta property="og:url" content="{{ url()->current() }}" />
     <meta property="og:site_name" content="{{ config('app.name') }}" />
 
