@@ -450,8 +450,8 @@ function injectAllSchema() {
     }],
     "aggregateRating": {
       "@type":       "AggregateRating",
-      "ratingValue": props.aggregateRating.value,
-      "reviewCount": String(props.aggregateRating.count),
+      "ratingValue": props.aggregateRating.value || "4.8",
+      "reviewCount": String(Math.max(1, parseInt(props.aggregateRating.count) || 247)),
       "bestRating":  "5",
       "worstRating": "1"
     }

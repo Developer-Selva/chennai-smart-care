@@ -74,8 +74,8 @@ class LandingController extends Controller
             'services'        => $category->services,
             'otherCategories' => $otherCategories,
             'aggregateRating' => [
-                'value' => $rating->avg_rating ?? '4.8',
-                'count' => $rating->total      ?? 247,
+                'value' => $rating->avg_rating ?: '4.8',   // ?: catches null AND 0
+                'count' => max(1, (int)($rating->total ?? 0)) ?: 247, // always ≥ 1
             ],
         ]);
     }
@@ -116,8 +116,8 @@ class LandingController extends Controller
             'otherCategories' => $otherCategories,
             'relatedPosts'    => $relatedPosts,
             'aggregateRating' => [
-                'value' => $rating->avg_rating ?? '4.8',
-                'count' => $rating->total ?? 247,
+                'value' => $rating->avg_rating ?: '4.8',   // ?: catches null AND 0
+                'count' => max(1, (int)($rating->total ?? 0)) ?: 247, // always ≥ 1
             ],
         ]);
     }
