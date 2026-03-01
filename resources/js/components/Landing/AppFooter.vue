@@ -63,7 +63,7 @@
             </li>
             <li class="flex items-start gap-2.5">
               <EnvelopeIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <a href="mailto:support@chennaismarcare.com" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismarcare.com</a>
+              <a href="mailto:support@chennaismartcare.com" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismartcare.com</a>
             </li>
             <li class="flex items-start gap-2.5">
               <ClockIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
