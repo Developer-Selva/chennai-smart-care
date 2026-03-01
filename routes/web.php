@@ -78,3 +78,17 @@ Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
     Route::post('/bookings/{bookingNumber}/cancel', [UserBooking::class, 'cancel'])->name('bookings.cancel');
     Route::get('/invoices/{invoice}', [\App\Http\Controllers\User\InvoiceController::class, 'show'])->name('invoice.show');
 });
+
+/*
+|--------------------------------------------------------------------------
+| LEGAL PAGES
+|--------------------------------------------------------------------------
+*/
+Route::get('/privacy-policy',         [LandingController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/terms',                  [LandingController::class, 'terms'])->name('terms');
+Route::get('/refund-policy',          [LandingController::class, 'refundPolicy'])->name('refund-policy');
+Route::get('/disclaimer',             [LandingController::class, 'disclaimer'])->name('disclaimer');
+Route::get('/service-warranty-policy',[LandingController::class, 'warrantyPolicy'])->name('warranty-policy');
+Route::get('/contact', [LandingController::class, 'contact'])->name('contact');
+Route::get('/free-consultation', [LandingController::class, 'consultationPage'])->name('consultation');
+Route::post('/free-consultation', [LandingController::class, 'freeConsultation'])->name('consultation.store');

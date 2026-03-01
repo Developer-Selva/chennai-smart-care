@@ -621,7 +621,7 @@
         </span>
         <span class="flex items-center gap-1">
           <ClockIcon class="w-3 h-3" />
-          30-Day Warranty
+          6-Month Warranty
         </span>
         <span class="flex items-center gap-1">
           <ChatBubbleLeftRightIcon class="w-3 h-3" />
@@ -813,7 +813,7 @@ function startAccurateLocationDetection() {
       form.value.longitude = pos.coords.longitude
       gpsAccuracy.value = Math.round(pos.coords.accuracy)
       form.value.location_accuracy = gpsAccuracy.value
-      form.value.location_source = 'gps_high_accuracy'
+      form.value.location_source = 'gps'
 
       // Update progress based on accuracy
       if (pos.coords.accuracy <= 10) {
@@ -845,7 +845,7 @@ function startAccurateLocationDetection() {
       form.value.longitude = pos.coords.longitude
       gpsAccuracy.value = Math.round(pos.coords.accuracy)
       form.value.location_accuracy = gpsAccuracy.value
-      form.value.location_source = 'gps_single'
+      form.value.location_source = 'gps'
       
       await reverseGeocode(pos.coords.latitude, pos.coords.longitude)
       locationValidated.value = true

@@ -528,36 +528,6 @@
           <StarIcon class="w-10 h-10 text-gray-400 mx-auto mb-3" />
           <p class="text-gray-500 text-sm">Reviews loading...</p>
         </div>
-
-        <!-- Rating summary -->
-        <div class="mt-12 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            <div class="text-center md:text-left">
-              <div class="text-5xl font-bold text-gray-900">4.9</div>
-              <div class="text-sm text-gray-500 mt-1">out of 5</div>
-              <div class="flex items-center justify-center md:justify-start gap-1 mt-2">
-                <StarIcon v-for="n in 5" :key="n" class="w-5 h-5 text-yellow-400 fill-current" />
-              </div>
-            </div>
-            <div class="space-y-2">
-              <div v-for="rating in [5, 4, 3, 2, 1]" :key="rating" class="flex items-center gap-2">
-                <span class="text-sm text-gray-600 w-8">{{ rating }} ★</span>
-                <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div class="h-full bg-yellow-400 rounded-full" :style="{ width: `${ratingBreakdown[rating]}%` }"></div>
-                </div>
-                <span class="text-sm text-gray-500 w-12">{{ ratingBreakdown[rating] }}%</span>
-              </div>
-            </div>
-            <div class="text-center md:text-right">
-              <div class="text-2xl font-bold text-gray-900">2,400+</div>
-              <div class="text-sm text-gray-500 mb-4">Verified Reviews</div>
-              <a href="https://g.page/chennaismartcare/reviews" target="_blank"
-                 class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm">
-                Read Google Reviews →
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -737,7 +707,6 @@ const steps = [
   { title: 'Repair & Pay',          description: 'Transparent pricing. No hidden charges, ever.' },
 ]
 
-const ratingBreakdown = { 5: 75, 4: 15, 3: 5, 2: 3, 1: 2 }
 
 // ─── Schema helpers ───────────────────────────────────────────────
 function injectJsonLd(id, data) {

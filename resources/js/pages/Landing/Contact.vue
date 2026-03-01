@@ -128,7 +128,7 @@
             <div class="text-center text-gray-500">
               <MapIcon class="w-12 h-12 mx-auto mb-2" />
               <p>Google Maps Integration</p>
-              <p class="text-sm">123, Anna Salai, Chennai - 600002</p>
+              <p class="text-sm">6/56, sindhu street , Ranga nagar, Porur, Moulivakkam, 600116</p>
             </div>
           </div>
         </div>
@@ -172,7 +172,7 @@ const contactInfo = [
   {
     icon: MapPinIcon,
     title: 'Service Center',
-    value: '123, Anna Salai, Chennai - 600002',
+    value: '6/56, sindhu street , Ranga nagar, Porur, Moulivakkam, 600116',
     type: 'text',
     subtext: 'Main service center'
   }

@@ -37,10 +37,26 @@ class BookingRepository implements BookingRepositoryInterface
             // Strip non-column keys before insert
             $insertData = array_diff_key($data, array_flip(['services', 'discount_amount']));
 
-            $booking = $this->model->create([
-                ...$insertData,
-                'booking_number' => Booking::generateBookingNumber(),
-            ]);
+            // Retry up to 5 times in case of a race-condition duplicate
+            $booking  = null;
+            $attempts = 0;
+            do {
+                $number = Booking::generateBookingNumber();
+                try {
+                    $booking = $this->model->create([
+                        ...$insertData,
+                        'booking_number' => $number,
+                    ]);
+                } catch (\Illuminate\Database\QueryException $e) {
+                    // 1062 = MySQL duplicate entry
+                    if ($e->errorInfo[1] !== 1062 || ++$attempts >= 5) {
+                        throw $e;
+                    }
+                    \Illuminate\Support\Facades\Log::warning(
+                        "Booking number collision on {$number}, retrying (attempt {$attempts})"
+                    );
+                }
+            } while (! $booking);
 
             if (! empty($data['services'])) {
                 // Pre-load service names from DB to avoid relying on client-submitted names

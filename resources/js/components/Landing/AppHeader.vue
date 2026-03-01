@@ -171,6 +171,7 @@ const navLinks = [
   { label: 'Services',     href: '/#services' },
   { label: 'How It Works', href: '/#how-it-works' },
   { label: 'Testimonials', href: '/#testimonials' },
+  { label: 'About Us',     href: '/about' },
   { label: 'Blog',         href: '/blog' },
   { label: 'Contact',      href: '/contact' },
 ]

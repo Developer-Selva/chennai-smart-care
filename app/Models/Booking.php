@@ -129,8 +129,30 @@ class Booking extends Model
     {
         $prefix = 'CSC';
         $year   = now()->format('Y');
-        $count  = static::whereYear('created_at', $year)->count() + 1;
 
-        return sprintf('%s-%s-%05d', $prefix, $year, $count);
+        // Find the highest existing number for this year and increment from there.
+        // Using MAX on the numeric suffix (extracted via SUBSTRING) is race-safe
+        // because we verify uniqueness in a retry loop below.
+        $last = static::whereYear('created_at', $year)
+            ->where('booking_number', 'like', "{$prefix}-{$year}-%")
+            ->orderByRaw('CAST(SUBSTRING_INDEX(booking_number, \'-\', -1) AS UNSIGNED) DESC')
+            ->value('booking_number');
+
+        $next = $last
+            ? (int) substr($last, strrpos($last, '-') + 1) + 1
+            : 1;
+
+        // Retry loop — handles race conditions under concurrent requests
+        $attempts = 0;
+        do {
+            $candidate = sprintf('%s-%s-%05d', $prefix, $year, $next);
+            $exists    = static::where('booking_number', $candidate)->exists();
+            if ($exists) {
+                $next++;
+            }
+            $attempts++;
+        } while ($exists && $attempts < 50);
+
+        return $candidate;
     }
 }

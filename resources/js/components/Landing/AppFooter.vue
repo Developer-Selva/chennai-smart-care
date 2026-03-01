@@ -13,7 +13,6 @@
               alt="Chennai Smart Care — Expert Appliance Repair"
               class="h-20 w-auto object-contain"
             />
-            <span class="font-extrabold text-lg">Chennai Smart Care</span>
           </div>
           <p class="text-gray-400 text-sm leading-relaxed mb-4">
             Expert AC, Refrigerator & Washing Machine repair in Chennai.
@@ -53,6 +52,16 @@
           </ul>
         </div>
 
+        <!-- Legal -->
+        <div>
+          <h3 class="font-bold text-sm uppercase tracking-wider text-gray-300 mb-4">Legal</h3>
+          <ul class="space-y-2.5">
+            <li v-for="l in legalLinks" :key="l.label">
+              <a :href="l.href" class="text-gray-400 hover:text-white text-sm transition-colors">{{ l.label }}</a>
+            </li>
+          </ul>
+        </div>
+
         <!-- Contact -->
         <div>
           <h3 class="font-bold text-sm uppercase tracking-wider text-gray-300 mb-4">Contact Us</h3>
@@ -63,7 +72,7 @@
             </li>
             <li class="flex items-start gap-2.5">
               <EnvelopeIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <a href="mailto:support@chennaismartcare.com" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismartcare.com</a>
+              <a href="mailto:support@chennaismarcare.in" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismarcare.in</a>
             </li>
             <li class="flex items-start gap-2.5">
               <ClockIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
@@ -82,7 +91,9 @@
         <p>© {{ year }} Chennai Smart Care. All rights reserved.</p>
         <div class="flex items-center gap-4">
           <a href="/privacy-policy" class="hover:text-gray-300 transition-colors">Privacy Policy</a>
-          <a href="/terms-of-service" class="hover:text-gray-300 transition-colors">Terms of Service</a>
+          <a href="/terms" class="hover:text-gray-300 transition-colors">Terms & Conditions</a>
+          <a href="/refund-policy" class="hover:text-gray-300 transition-colors">Refund Policy</a>
+          <a href="/disclaimer" class="hover:text-gray-300 transition-colors">Disclaimer</a>
           <a href="/sitemap.xml" class="hover:text-gray-300 transition-colors">Sitemap</a>
         </div>
       </div>
@@ -111,5 +122,13 @@ const quickLinks = [
   { label: 'Blog & Tips',          href: '/blog' },
   { label: 'About Us',             href: '/about' },
   { label: 'Contact',              href: '/contact' },
+]
+
+const legalLinks = [
+  { label: 'Privacy Policy',          href: '/privacy-policy' },
+  { label: 'Terms & Conditions',      href: '/terms' },
+  { label: 'Refund & Cancellation',   href: '/refund-policy' },
+  { label: 'Disclaimer',              href: '/disclaimer' },
+  { label: 'Service Warranty Policy', href: '/service-warranty-policy' },
 ]
 </script>

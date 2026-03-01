@@ -170,6 +170,32 @@ class LandingController extends Controller
         return Inertia::render('Landing/About');
     }
 
+    // ── Legal Pages ────────────────────────────────────────────
+    public function privacyPolicy(): Response
+    {
+        return Inertia::render('Legal/PrivacyPolicy');
+    }
+
+    public function terms(): Response
+    {
+        return Inertia::render('Legal/Terms');
+    }
+
+    public function refundPolicy(): Response
+    {
+        return Inertia::render('Legal/RefundPolicy');
+    }
+
+    public function disclaimer(): Response
+    {
+        return Inertia::render('Legal/Disclaimer');
+    }
+
+    public function warrantyPolicy(): Response
+    {
+        return Inertia::render('Legal/WarrantyPolicy');
+    }
+
     public function contact(): Response
     {
         return Inertia::render('Landing/Contact');
