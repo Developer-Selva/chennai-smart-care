@@ -7,12 +7,9 @@
     last-updated="1 March 2025"
     :sections="sections"
   >
-    <p>
-      Chennai Smart Care ("we", "our", "us") is committed to protecting your privacy.
-      This Privacy Policy explains how we collect, use, disclose, and safeguard your
-      information when you visit <a href="https://chennaismartcare.com">chennaismartcare.com</a>
-      or use our appliance repair services.
-    </p>
+    <p>Chennai Smart Care ("we", "our", "us"), a registered MSME enterprise under the name CHENNAISMARTCARE (Udyam No: UDYAM-TN-08-0121717), 
+      is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, 
+      and safeguard your information when you visit <a href="https://chennaismartcare.com">chennaismartcare.com</a> or use our appliance repair services.</p>
     <p>
       By using our website or services, you consent to the practices described in this policy.
       If you do not agree, please do not use our services.

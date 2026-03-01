@@ -174,6 +174,13 @@ const contactInfo = [
     title: 'Service Center',
     value: '6/56, sindhu street , Ranga nagar, Porur, Moulivakkam, 600116',
     type: 'text',
+    subtext: 'Branch'
+  },
+  {
+    icon: MapPinIcon,
+    title: 'Registered Office',
+    value: '6/224, VBR Building, Kovur, Kanchipuram – 600128)',
+    type: 'text',
     subtext: 'Main service center'
   }
 ]
