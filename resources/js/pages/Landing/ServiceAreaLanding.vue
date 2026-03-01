@@ -28,7 +28,6 @@
 
     <!-- Hero -->
     <section class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white overflow-hidden">
-      <!-- Background pattern -->
       <div class="absolute inset-0 opacity-10"
            style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 32px 32px;"></div>
       <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
@@ -62,9 +61,19 @@
               <span class="text-blue-300">in {{ area.name }}</span>
             </h1>
             <p class="mt-4 text-blue-100 text-lg max-w-2xl leading-relaxed">
-              Certified {{ category.name.toLowerCase() }} technicians serving {{ area.name }}, {{ area.nearbyAreas.slice(0,2).join(', ') }} and surrounding areas.
+              Certified {{ category.name.toLowerCase() }} technicians serving {{ area.name }},
+              {{ area.nearbyAreas.slice(0,2).join(', ') }} and surrounding areas.
               Same-day service · 6-month warranty · Transparent pricing.
             </p>
+
+            <!-- Local landmarks pills -->
+            <div v-if="localContent.landmarks?.length" class="flex flex-wrap gap-2 mt-4">
+              <span v-for="lm in localContent.landmarks" :key="lm"
+                    class="text-xs bg-white/10 border border-white/20 text-blue-200 px-2.5 py-1 rounded-full">
+                📍 {{ lm }}
+              </span>
+            </div>
+
             <div class="flex flex-wrap gap-3 mt-6">
               <a :href="`/quick-booking?category=${category.slug}&area=${area.slug}`"
                  class="bg-white text-blue-900 font-bold px-6 py-3 rounded-xl hover:bg-blue-50 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-900/30 flex items-center gap-2 text-sm">
@@ -99,6 +108,36 @@
 
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-10">
+
+          <!-- ═══════════════════════════════════════════════
+               UNIQUE LOCAL SECTION (200-300 words)
+               This is the key differentiator — hyper-local
+               content specific to this area's real conditions
+          ═══════════════════════════════════════════════ -->
+          <section v-if="localContent.unique_section" class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span class="text-2xl">🏘️</span>
+              {{ category.name }} Repair in {{ area.name }}: What You Should Know
+            </h2>
+            <!-- Render the unique prose content -->
+            <div class="text-gray-700 text-sm leading-relaxed space-y-3">
+              <p v-for="(para, i) in uniqueParagraphs" :key="i">{{ para }}</p>
+            </div>
+
+            <!-- Local issues as visual pills -->
+            <div v-if="localContent.local_issues?.length" class="mt-5 pt-5 border-t border-amber-200">
+              <p class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-3">
+                Common {{ category.name }} Issues in {{ area.name }}
+              </p>
+              <ul class="space-y-2">
+                <li v-for="issue in localContent.local_issues" :key="issue"
+                    class="flex items-start gap-2 text-sm text-amber-900">
+                  <span class="text-amber-500 mt-0.5 flex-shrink-0">⚠</span>
+                  {{ issue }}
+                </li>
+              </ul>
+            </div>
+          </section>
 
           <!-- Why Locals Trust Us in this Area -->
           <section>
@@ -151,13 +190,15 @@
             </div>
           </section>
 
-          <!-- Area Coverage Map / Nearby -->
+          <!-- Area Coverage / Nearby -->
           <section class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
             <h2 class="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
               <MapPinIcon class="w-5 h-5 text-blue-600" />
               Covering {{ area.name }} &amp; Nearby Areas
             </h2>
-            <p class="text-gray-500 text-sm mb-5">Our {{ area.name }}-based technicians also serve these surrounding localities:</p>
+            <p class="text-gray-500 text-sm mb-5">
+              Our {{ area.name }}-based technicians also serve these surrounding localities:
+            </p>
             <div class="flex flex-wrap gap-2">
               <a v-for="nearby in area.nearbyAreas" :key="nearby"
                  :href="`/services/${category.slug}/${slugify(nearby)}`"
@@ -170,14 +211,31 @@
             </p>
           </section>
 
-          <!-- FAQ -->
+          <!-- ═══════════════════════════════════════════════
+               FAQ — Generic (5) + Location-Specific (2)
+               Total 7 FAQs per page — all unique to this URL
+          ═══════════════════════════════════════════════ -->
           <section>
             <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <QuestionMarkCircleIcon class="w-6 h-6 text-blue-600" />
               FAQs — {{ category.name }} Repair in {{ area.name }}
             </h2>
             <div class="space-y-3">
-              <details v-for="(faq, i) in localFaqs" :key="i"
+              <!-- Location-specific FAQs first (most unique, most valuable) -->
+              <details v-if="localContent.unique_faqs?.length"
+                       v-for="(faq, i) in localContent.unique_faqs" :key="`local-${i}`"
+                       class="group bg-amber-50 rounded-xl border border-amber-200 overflow-hidden">
+                <summary class="flex items-center justify-between p-4 cursor-pointer font-semibold text-gray-900 hover:bg-amber-100 transition-colors list-none">
+                  <span>{{ faq.q }}</span>
+                  <ChevronDownIcon class="w-4 h-4 text-gray-400 flex-shrink-0 transition-transform group-open:rotate-180" />
+                </summary>
+                <p class="px-4 pb-4 pt-3 text-sm text-gray-600 leading-relaxed border-t border-amber-200">
+                  {{ faq.a }}
+                </p>
+              </details>
+
+              <!-- Generic area FAQs -->
+              <details v-for="(faq, i) in genericFaqs" :key="`generic-${i}`"
                        class="group bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
                 <summary class="flex items-center justify-between p-4 cursor-pointer font-semibold text-gray-900 hover:bg-gray-100 transition-colors list-none">
                   <span>{{ faq.q }}</span>
@@ -206,7 +264,7 @@
             </div>
           </section>
 
-          <!-- All Areas served by this service -->
+          <!-- All Areas served by this service (internal links) -->
           <section class="bg-white rounded-2xl border border-gray-200 p-6">
             <h2 class="text-lg font-bold text-gray-900 mb-4">
               {{ category.name }} Repair — All Areas We Cover
@@ -253,6 +311,25 @@
               <p class="text-xs text-white flex items-center gap-2">✓ Transparent pricing</p>
               <p class="text-xs text-white flex items-center gap-2">✓ Background-verified techs</p>
             </div>
+          </div>
+
+          <!-- Local Issues Card (unique per location) -->
+          <div v-if="localContent.local_issues?.length"
+               class="bg-amber-50 rounded-2xl border border-amber-200 p-5">
+            <h3 class="font-bold text-amber-900 mb-3 text-sm flex items-center gap-2">
+              <span>⚠️</span> Known Issues in {{ area.name }}
+            </h3>
+            <ul class="space-y-2">
+              <li v-for="issue in localContent.local_issues" :key="issue"
+                  class="text-xs text-amber-800 flex items-start gap-2">
+                <span class="text-amber-500 flex-shrink-0 mt-0.5">•</span>
+                {{ issue }}
+              </li>
+            </ul>
+            <a :href="`/quick-booking?category=${category.slug}&area=${area.slug}`"
+               class="block mt-4 text-center text-xs bg-amber-600 text-white py-2 rounded-lg font-semibold hover:bg-amber-700 transition-colors">
+              Fix These Issues Today
+            </a>
           </div>
 
           <!-- Ratings -->
@@ -323,34 +400,56 @@ import AppFooter from '@/components/Landing/AppFooter.vue'
 
 const props = defineProps({
   category:        { type: Object, required: true },
-  area:            { type: Object, required: true },  // { name, slug, nearbyAreas[] }
+  area:            { type: Object, required: true },
   services:        { type: Array,  default: () => [] },
   otherCategories: { type: Array,  default: () => [] },
   relatedPosts:    { type: Array,  default: () => [] },
   aggregateRating: { type: Object, default: () => ({ value: '4.8', count: 247 }) },
+  localContent:    { type: Object, default: () => ({}) }, // ← hyper-local data
 })
 
-// ── All 16 service areas ─────────────────────────────────────
+// ── All service areas ─────────────────────────────────────────
 const allAreas = [
-  { name: 'Porur',         slug: 'porur' },
-  { name: 'Anna Nagar',    slug: 'anna-nagar' },
-  { name: 'Adyar',         slug: 'adyar' },
-  { name: 'Velachery',     slug: 'velachery' },
-  { name: 'T. Nagar',      slug: 't-nagar' },
-  { name: 'Koyambedu',     slug: 'koyambedu' },
-  { name: 'Maduravoyal',   slug: 'maduravoyal' },
-  { name: 'Vadapalani',    slug: 'vadapalani' },
-  { name: 'Ambattur',      slug: 'ambattur' },
-  { name: 'Mogappair',     slug: 'mogappair' },
-  { name: 'Chromepet',     slug: 'chromepet' },
-  { name: 'Tambaram',      slug: 'tambaram' },
-  { name: 'Guindy',        slug: 'guindy' },
-  { name: 'Mylapore',      slug: 'mylapore' },
-  { name: 'Kilpauk',       slug: 'kilpauk' },
-  { name: 'Perambur',      slug: 'perambur' },
+  { name: 'Porur',          slug: 'porur' },
+  { name: 'Anna Nagar',     slug: 'anna-nagar' },
+  { name: 'Adyar',          slug: 'adyar' },
+  { name: 'Velachery',      slug: 'velachery' },
+  { name: 'T. Nagar',       slug: 't-nagar' },
+  { name: 'Koyambedu',      slug: 'koyambedu' },
+  { name: 'Maduravoyal',    slug: 'maduravoyal' },
+  { name: 'Vadapalani',     slug: 'vadapalani' },
+  { name: 'Ambattur',       slug: 'ambattur' },
+  { name: 'Mogappair',      slug: 'mogappair' },
+  { name: 'Chromepet',      slug: 'chromepet' },
+  { name: 'Tambaram',       slug: 'tambaram' },
+  { name: 'Guindy',         slug: 'guindy' },
+  { name: 'Mylapore',       slug: 'mylapore' },
+  { name: 'Kilpauk',        slug: 'kilpauk' },
+  { name: 'Perambur',       slug: 'perambur' },
+  { name: 'OMR',            slug: 'omr' },
+  { name: 'Sholinganallur', slug: 'sholinganallur' },
+  { name: 'Perungudi',      slug: 'perungudi' },
+  { name: 'Thoraipakkam',   slug: 'thoraipakkam' },
+  { name: 'Pallikaranai',   slug: 'pallikaranai' },
+  { name: 'Medavakkam',     slug: 'medavakkam' },
+  { name: 'Nungambakkam',   slug: 'nungambakkam' },
+  { name: 'Valasaravakkam', slug: 'valasaravakkam' },
+  { name: 'Mangadu',        slug: 'mangadu' },
+  { name: 'Kovur',          slug: 'kovur' },
+  { name: 'Korattur',       slug: 'korattur' },
+  { name: 'Pammal',         slug: 'pammal' },
 ]
 
 const slugify = (s) => s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+
+// ── Split unique_section text into paragraphs ─────────────────
+const uniqueParagraphs = computed(() => {
+  if (!props.localContent?.unique_section) return []
+  return props.localContent.unique_section
+    .split('\n\n')
+    .map(p => p.trim())
+    .filter(Boolean)
+})
 
 // ── SEO ──────────────────────────────────────────────────────
 const base         = 'https://chennaismartcare.com'
@@ -358,18 +457,19 @@ const canonicalUrl = computed(() => `${base}/services/${props.category.slug}/${p
 const pageTitle    = computed(() =>
   `${props.category.name} Repair in ${props.area.name} — Same-Day Service | Chennai Smart Care`
 )
-const metaDescription = computed(() =>
-  `Certified ${props.category.name} repair in ${props.area.name}, Chennai. `+
-  `Expert technicians, same-day service, 6-month warranty, transparent pricing. `+
-  `Call +91 94449 00470 or book online.`
-)
+const metaDescription = computed(() => {
+  // Use local issues in meta description for richer snippet
+  const issues = props.localContent?.local_issues?.slice(0, 1)[0] ?? ''
+  const issueText = issues ? ` We specialise in ${issues.toLowerCase()}.` : ''
+  return `Certified ${props.category.name} repair in ${props.area.name}, Chennai.${issueText} Same-day service, 6-month warranty. Call +91 94449 00470 or book online.`
+})
 
 // ── Static content ───────────────────────────────────────────
 const trustPoints = [
-  { icon: '⚡', title: 'Same-Day Service',        desc: `Technicians in ${props.area.name} available 9AM–9PM, 7 days a week.` },
-  { icon: '🛡️', title: '6-Month Warranty',         desc: 'Every repair backed by our comprehensive service guarantee.' },
-  { icon: '💰', title: 'Transparent Pricing',     desc: 'Upfront quote before work starts — no hidden charges ever.' },
-  { icon: '🔧', title: 'Certified Technicians',   desc: 'Trained, background-verified experts for all brands & models.' },
+  { icon: '⚡', title: 'Same-Day Service',      desc: `Technicians in ${props.area.name} available 9AM–9PM, 7 days a week.` },
+  { icon: '🛡️', title: '6-Month Warranty',       desc: 'Every repair backed by our comprehensive service guarantee.' },
+  { icon: '💰', title: 'Transparent Pricing',   desc: 'Upfront quote before work starts — no hidden charges ever.' },
+  { icon: '🔧', title: 'Certified Technicians', desc: 'Trained, background-verified experts for all brands & models.' },
 ]
 
 const howItWorks = [
@@ -379,26 +479,27 @@ const howItWorks = [
   { icon: '✅', title: 'Fixed & Warranted', desc: '6-month guarantee' },
 ]
 
-const localFaqs = computed(() => [
+// ── Generic FAQs (always present) ────────────────────────────
+const genericFaqs = computed(() => [
   {
     q: `How quickly can you send a ${props.category.name} technician to ${props.area.name}?`,
-    a: `We typically dispatch a technician to ${props.area.name} within 30–90 minutes of booking. For same-day appointments, we have slots available 9AM–9PM, 7 days a week including weekends.`
+    a: `We typically dispatch a technician to ${props.area.name} within 30–90 minutes of booking. Same-day slots are available 9AM–9PM, 7 days a week including weekends and most holidays.`,
   },
   {
-    q: `What does a ${props.category.name} repair cost in ${props.area.name}?`,
-    a: `Our ${props.category.name} repair charges in ${props.area.name} start from ₹299 for a service visit and diagnosis. Repair costs vary by the issue — we provide a transparent quote before any work begins, with no hidden charges.`
+    q: `What does ${props.category.name} repair cost in ${props.area.name}?`,
+    a: `Charges start from ₹299 for a doorstep visit and diagnosis in ${props.area.name}. Repair costs depend on the specific fault — we provide a transparent quote before any work begins. No hidden charges.`,
   },
   {
-    q: `Do you offer a warranty on ${props.category.name} repairs in ${props.area.name}?`,
-    a: `Yes! All our ${props.category.name} repairs in ${props.area.name} come with a 6-month service warranty. If the same issue recurs within this period, we'll fix it at no extra cost.`
+    q: `Is there a warranty on ${props.category.name} repairs in ${props.area.name}?`,
+    a: `Yes — all repairs in ${props.area.name} carry a 6-month service warranty. Same fault recurs within 6 months? We return and fix it free of charge, no questions asked.`,
   },
   {
     q: `Which ${props.category.name} brands do you service in ${props.area.name}?`,
-    a: `We service all major brands in ${props.area.name} including Samsung, LG, Voltas, Daikin, Hitachi, Blue Star, Carrier, Godrej, Whirlpool, Bosch, IFB, and more.`
+    a: `We service Samsung, LG, Voltas, Daikin, Hitachi, Blue Star, Carrier, Godrej, Whirlpool, Bosch, IFB, and all other major brands. Please mention your brand when booking.`,
   },
   {
     q: `Do you also cover areas near ${props.area.name}?`,
-    a: `Yes! Our ${props.area.name} technicians also cover ${props.area.nearbyAreas?.join(', ')}. If your area isn't listed, call us at +91 94449 00470.`
+    a: `Yes — our ${props.area.name} technicians also cover ${props.area.nearbyAreas?.join(', ')}. For areas not listed, call +91 94449 00470 and we'll confirm availability.`,
   },
 ])
 
@@ -415,90 +516,103 @@ function removeJsonLd(id) { document.getElementById(id)?.remove() }
 
 function injectAllSchema() {
   const url = canonicalUrl.value
+  const geo  = props.localContent?.geo ?? { lat: 13.0827, lng: 80.2707 }
 
-  // 1. LocalBusiness with specific area
+  // 1. LocalBusiness — areaServed is location-specific (not generic "Chennai")
   injectJsonLd('schema-local', {
-    "@context":   "https://schema.org",
-    "@type":      "HomeAndConstructionBusiness",
-    "@id":        `${base}/#business`,
-    "name":       "Chennai Smart Care",
-    "url":        base,
-    "telephone":  "+91-94449-00470",
-    "image":      `${base}/images/logo.png`,
-    "priceRange": "₹₹",
-    "currenciesAccepted": "INR",
-    "paymentAccepted": "Cash, UPI, Card",
-    "address": {
-      "@type":           "PostalAddress",
-      "streetAddress":   "Porur",
-      "addressLocality": "Chennai",
-      "addressRegion":   "Tamil Nadu",
-      "postalCode":      "600116",
-      "addressCountry":  "IN"
+    '@context':   'https://schema.org',
+    '@type':      'HomeAndConstructionBusiness',
+    '@id':        `${base}/#business`,
+    'name':       'Chennai Smart Care',
+    'url':        base,
+    'telephone':  '+91-94449-00470',
+    'image':      `${base}/images/logo.png`,
+    'priceRange': '₹₹',
+    'currenciesAccepted': 'INR',
+    'paymentAccepted':    'Cash, UPI, Card',
+    'address': {
+      '@type':           'PostalAddress',
+      'streetAddress':   props.area.name,          // location-specific street
+      'addressLocality': 'Chennai',
+      'addressRegion':   'Tamil Nadu',
+      'addressCountry':  'IN',
     },
-    "geo": { "@type": "GeoCoordinates", "latitude": 13.0368, "longitude": 80.1596 },
-    "areaServed": [
-      props.area.name,
-      ...props.area.nearbyAreas,
-      "Chennai"
-    ].map(name => ({ "@type": "City", "name": name })),
-    "openingHoursSpecification": [{
-      "@type":     "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-      "opens":     "09:00",
-      "closes":    "21:00"
+    'geo': {
+      '@type':     'GeoCoordinates',
+      'latitude':  geo.lat,                         // area-specific coordinates
+      'longitude': geo.lng,
+    },
+    // areaServed: primary area + nearby — unique per page
+    'areaServed': [
+      { '@type': 'City', 'name': props.area.name },
+      ...props.area.nearbyAreas.map(n => ({ '@type': 'City', 'name': n })),
+    ],
+    'openingHoursSpecification': [{
+      '@type':     'OpeningHoursSpecification',
+      'dayOfWeek': ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+      'opens':     '09:00',
+      'closes':    '21:00',
     }],
-    "aggregateRating": {
-      "@type":       "AggregateRating",
-      "ratingValue": props.aggregateRating.value || "4.8",
-      "reviewCount": String(Math.max(1, parseInt(props.aggregateRating.count) || 247)),
-      "bestRating":  "5",
-      "worstRating": "1"
-    }
+    'aggregateRating': {
+      '@type':       'AggregateRating',
+      'ratingValue': props.aggregateRating.value || '4.8',
+      'reviewCount': String(Math.max(1, parseInt(props.aggregateRating.count) || 247)),
+      'bestRating':  '5',
+      'worstRating': '1',
+    },
   })
 
-  // 2. Service schema
+  // 2. Service schema — specific to this area
   injectJsonLd('schema-service', {
-    "@context": "https://schema.org",
-    "@type":    "Service",
-    "name":     `${props.category.name} Repair in ${props.area.name}`,
-    "url":      url,
-    "provider": { "@type": "LocalBusiness", "@id": `${base}/#business`, "name": "Chennai Smart Care" },
-    "areaServed": { "@type": "City", "name": props.area.name, "sameAs": `https://en.wikipedia.org/wiki/Chennai` },
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name":  `${props.category.name} Services in ${props.area.name}`,
-      "itemListElement": props.services.map((s, i) => ({
-        "@type":       "Offer",
-        "position":    i + 1,
-        "itemOffered": { "@type": "Service", "name": s.name, "description": s.description ?? '' },
-        "price":       String(s.effective_price ?? s.base_price),
-        "priceCurrency": "INR",
-        "seller":      { "@type": "LocalBusiness", "name": "Chennai Smart Care" }
-      }))
-    }
+    '@context': 'https://schema.org',
+    '@type':    'Service',
+    'name':     `${props.category.name} Repair in ${props.area.name}`,
+    'url':      url,
+    'provider': { '@type': 'LocalBusiness', '@id': `${base}/#business`, 'name': 'Chennai Smart Care' },
+    'areaServed': {
+      '@type':  'City',
+      'name':   props.area.name,
+      'sameAs': 'https://en.wikipedia.org/wiki/Chennai',
+    },
+    'hasOfferCatalog': {
+      '@type': 'OfferCatalog',
+      'name':  `${props.category.name} Services in ${props.area.name}`,
+      'itemListElement': props.services.map((s, i) => ({
+        '@type':       'Offer',
+        'position':    i + 1,
+        'itemOffered': { '@type': 'Service', 'name': s.name, 'description': s.description ?? '' },
+        'price':       String(s.effective_price ?? s.base_price),
+        'priceCurrency': 'INR',
+        'seller':      { '@type': 'LocalBusiness', 'name': 'Chennai Smart Care' },
+      })),
+    },
   })
 
   // 3. BreadcrumbList
   injectJsonLd('schema-breadcrumb', {
-    "@context": "https://schema.org",
-    "@type":    "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home",    "item": base },
-      { "@type": "ListItem", "position": 2, "name": props.category.name + " Repair", "item": `${base}/services/${props.category.slug}` },
-      { "@type": "ListItem", "position": 3, "name": props.area.name, "item": url },
-    ]
+    '@context': 'https://schema.org',
+    '@type':    'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Home',                              'item': base },
+      { '@type': 'ListItem', 'position': 2, 'name': props.category.name + ' Repair',     'item': `${base}/services/${props.category.slug}` },
+      { '@type': 'ListItem', 'position': 3, 'name': `${props.category.name} Repair in ${props.area.name}`, 'item': url },
+    ],
   })
 
-  // 4. FAQPage
+  // 4. FAQPage — local FAQs FIRST (highest signal), then generic
+  const allFaqItems = [
+    ...(props.localContent?.unique_faqs ?? []),
+    ...genericFaqs.value,
+  ].map(f => ({
+    '@type':          'Question',
+    'name':           f.q,
+    'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+  }))
+
   injectJsonLd('schema-faq', {
-    "@context": "https://schema.org",
-    "@type":    "FAQPage",
-    "mainEntity": localFaqs.value.map(f => ({
-      "@type":          "Question",
-      "name":           f.q,
-      "acceptedAnswer": { "@type": "Answer", "text": f.a }
-    }))
+    '@context':   'https://schema.org',
+    '@type':      'FAQPage',
+    'mainEntity': allFaqItems,
   })
 }
 

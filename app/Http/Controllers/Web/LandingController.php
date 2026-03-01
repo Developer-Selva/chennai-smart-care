@@ -11,6 +11,7 @@ use App\Models\Consultation;
 use App\Services\WhatsAppService;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 use Illuminate\Http\Request;
+use App\Data\LocationIntelligence;
 use Illuminate\Http\JsonResponse;
 
 class LandingController extends Controller
@@ -109,6 +110,9 @@ class LandingController extends Controller
             ->selectRaw('ROUND(AVG(rating),1) as avg_rating, COUNT(*) as total')
             ->first();
 
+        // Hyper-local unique content — prevents Google doorway page penalty
+        $localContent = LocationIntelligence::get($areaSlug);
+
         return Inertia::render('Landing/ServiceAreaLanding', [
             'category'        => $category,
             'area'            => $area,
@@ -116,9 +120,10 @@ class LandingController extends Controller
             'otherCategories' => $otherCategories,
             'relatedPosts'    => $relatedPosts,
             'aggregateRating' => [
-                'value' => $rating->avg_rating ?: '4.8',   // ?: catches null AND 0
-                'count' => max(1, (int)($rating->total ?? 0)) ?: 247, // always ≥ 1
+                'value' => $rating->avg_rating ?: '4.8',
+                'count' => max(1, (int)($rating->total ?? 0)) ?: 247,
             ],
+            'localContent'    => $localContent,
         ]);
     }
 
