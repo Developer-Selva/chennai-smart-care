@@ -72,7 +72,7 @@
             </li>
             <li class="flex items-start gap-2.5">
               <EnvelopeIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <a href="mailto:support@chennaismarcare.in" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismarcare.in</a>
+              <a href="mailto:support@chennaismartcare.com" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismartcare.com</a>
             </li>
             <li class="flex items-start gap-2.5">
               <ClockIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
@@ -80,7 +80,12 @@
             </li>
             <li class="flex items-start gap-2.5">
               <MapPinIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <span class="text-gray-400 text-sm">All areas within 20km of Chennai</span>
+              <span class="text-gray-400 text-sm">Service Center: 6/56, sindhu street , Ranga nagar, Porur, Moulivakkam, 600116</span>
+            </li>
+
+            <li class="flex items-start gap-2.5">
+              <MapPinIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <span class="text-gray-400 text-sm">Registered Office: 6/224, VBR Building, Kovur, Kanchipuram – 600128 <br>Udyam No: UDYAM-TN-08-0121717</span>
             </li>
           </ul>
         </div>
