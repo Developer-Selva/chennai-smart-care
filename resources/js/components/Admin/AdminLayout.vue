@@ -123,6 +123,8 @@ const navItems = [
   { divider: 'System' },
   { label: 'Reports',       href: '/admin/reports',         icon: ChartBarIcon },
   { label: 'Settings',      href: '/admin/settings',        icon: CogIcon },
+  { divider: 'Meida' },
+  { label: 'Library',      href: '/admin/media-library',        icon: CogIcon },
 ]
 
 function isActive(href) { return page.url.startsWith(href) }

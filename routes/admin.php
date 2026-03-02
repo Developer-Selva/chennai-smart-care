@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ConsultationController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\MediaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,5 +83,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Settings
         Route::get('/settings',  [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings',  [SettingsController::class, 'update'])->name('settings.update');
+
+        // Media Library Inertia page
+        Route::get('/media-library', function () {
+            return \Inertia\Inertia::render('Admin/Media/Index');
+        })->name('media.page');
+
+        // Media library — image upload, browse, delete
+        Route::prefix('media')->name('media.')->group(function () {
+            Route::get('/',         [MediaController::class, 'index'])->name('index');
+            Route::post('/',        [MediaController::class, 'store'])->name('store');
+            Route::patch('/{media}',[MediaController::class, 'update'])->name('update');
+            Route::delete('/{media}',[MediaController::class, 'destroy'])->name('destroy');
+        });
     });
 });
