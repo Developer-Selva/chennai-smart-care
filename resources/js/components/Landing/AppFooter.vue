@@ -74,7 +74,7 @@
               <EnvelopeIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
               <a href="mailto:support@chennaismartcare.com" class="text-gray-400 hover:text-white text-sm transition-colors">support@chennaismartcare.com</a>
             </li>
-            <li class="flex items-start gap-2.5">
+            <li class="flex items-start gap-2.5">                                
               <ClockIcon class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
               <span class="text-gray-400 text-sm">Daily: 9:00 AM – 9:00 PM</span>
             </li>
