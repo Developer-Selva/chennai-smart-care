@@ -733,20 +733,52 @@ const fullAddress = computed(() => {
 
 const availableDates = computed(() => {
   const dates = []
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  
+  // Get current date in IST
+  const now = new Date()
+  
+  // Create today at midnight IST
+  const today = new Date(Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0, 0, 0, 0
+  ))
+  
+  // Adjust for IST offset (5 hours 30 minutes)
+  today.setHours(today.getHours() + 5)
+  today.setMinutes(today.getMinutes() + 30)
   
   for (let i = 0; i < 14; i++) {
-    const d = new Date()
-    d.setDate(d.getDate() + i)
-    d.setHours(0, 0, 0, 0)
+    // Create date for each future day at noon IST
+    const d = new Date(Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + i,
+      12, 0, 0, 0 // Noon UTC
+    ))
+    
+    // Adjust to IST
+    d.setHours(d.getHours() + 5)
+    d.setMinutes(d.getMinutes() + 30)
+    
+    // Format as YYYY-MM-DD in IST
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    const dateValue = `${year}-${month}-${day}`
+    
+    // Create date objects for comparison (at midnight IST)
+    const compareDate = new Date(Date.UTC(year, d.getMonth(), d.getDate(), 0, 0, 0, 0))
+    compareDate.setHours(compareDate.getHours() + 5)
+    compareDate.setMinutes(compareDate.getMinutes() + 30)
     
     dates.push({
-      value:   d.toISOString().split('T')[0],
-      day:     d.toLocaleDateString('en-IN', { weekday: 'short' }),
+      value: dateValue,
+      day: d.toLocaleDateString('en-IN', { weekday: 'short', timeZone: 'Asia/Kolkata' }),
       dateNum: d.getDate(),
-      month:   d.toLocaleDateString('en-IN', { month: 'short' }),
-      isPast: d < today,
+      month: d.toLocaleDateString('en-IN', { month: 'short', timeZone: 'Asia/Kolkata' }),
+      isPast: compareDate < today,
     })
   }
   return dates

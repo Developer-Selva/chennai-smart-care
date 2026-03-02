@@ -84,6 +84,8 @@ Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
 | LEGAL PAGES
 |--------------------------------------------------------------------------
 */
+Route::get('/offline', fn() => response()->file(public_path('offline.html')))->name('offline');
+
 Route::get('/privacy-policy',         [LandingController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::get('/terms',                  [LandingController::class, 'terms'])->name('terms');
 Route::get('/refund-policy',          [LandingController::class, 'refundPolicy'])->name('refund-policy');
