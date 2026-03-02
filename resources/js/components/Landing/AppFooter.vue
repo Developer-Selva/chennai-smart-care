@@ -119,7 +119,7 @@ const serviceLinks = [
   { label: 'Refrigerator Repair',          href: '/services/refrigerator' },
   { label: 'Fridge Gas Charging',          href: '/services/fridge-gas-charging' },
   { label: 'Washing Machine Repair',       href: '/services/washing-machine' },
-  { label: 'Appliance Annual Maintenance', href: '/services/amc' },
+  // { label: 'Appliance Annual Maintenance', href: '/services/amc' },
 ]
 
 const quickLinks = [
