@@ -461,8 +461,8 @@
           subtitle="Real reviews from real customers across Porur, Vadapalani, Koyambedu and more."
         />
         <div v-if="props.testimonials?.length" class="mt-12">
-          <!-- Featured testimonial -->
-          <div v-if="featuredTestimonial" class="mb-8">
+          <!-- Featured testimonial (hidden on mobile) -->
+          <div v-if="featuredTestimonial" class="hidden md:block mb-8">
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
               <div class="flex items-center gap-4 mb-4">
                 <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl font-bold">
@@ -479,46 +479,130 @@
             </div>
           </div>
 
-          <!-- Carousel -->
-          <div class="relative px-4 sm:px-0">
-            <button
-              @click="prevSlide"
-              :disabled="isFirstSlide"
-              :class="['absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-6 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 hover:shadow-xl transition-all', isFirstSlide && 'opacity-50 cursor-not-allowed']">
-              <ChevronLeftIcon class="w-5 h-5" />
-            </button>
-            <button
-              @click="nextSlide"
-              :disabled="isLastSlide"
-              :class="['absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-6 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 hover:shadow-xl transition-all', isLastSlide && 'opacity-50 cursor-not-allowed']">
-              <ChevronRightIcon class="w-5 h-5" />
-            </button>
-            <div class="overflow-hidden">
-              <div
-                class="flex transition-transform duration-500 ease-out"
-                :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-                <div
-                  v-for="(group, gi) in testimonialGroups"
-                  :key="gi"
-                  class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <TestimonialCard
-                    v-for="(review, ri) in group"
-                    :key="review.id"
-                    :review="review"
-                    :is-active="gi === currentSlide && ri === 0"
-                    class="h-full"
-                  />
+          <!-- Testimonials Carousel -->
+          <div class="relative">
+            <!-- Desktop View (3 columns) - hidden on mobile -->
+            <div class="hidden md:block">
+              <div class="relative px-4">
+                <!-- Navigation arrows (desktop) -->
+                <button
+                  @click="prevSlide"
+                  :disabled="isFirstSlide"
+                  :class="['absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 hover:shadow-xl transition-all', isFirstSlide && 'opacity-50 cursor-not-allowed']">
+                  <ChevronLeftIcon class="w-5 h-5" />
+                </button>
+                
+                <button
+                  @click="nextSlide"
+                  :disabled="isLastSlide"
+                  :class="['absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 hover:shadow-xl transition-all', isLastSlide && 'opacity-50 cursor-not-allowed']">
+                  <ChevronRightIcon class="w-5 h-5" />
+                </button>
+
+                <!-- Desktop carousel (groups of 3) -->
+                <div class="overflow-hidden">
+                  <div
+                    class="flex transition-transform duration-500 ease-out"
+                    :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
+                    <div
+                      v-for="(group, gi) in testimonialGroups"
+                      :key="gi"
+                      class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <TestimonialCard
+                        v-for="(review, ri) in group"
+                        :key="review.id"
+                        :review="review"
+                        :is-active="gi === currentSlide && ri === 0"
+                        class="h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Desktop navigation dots -->
+                <div class="mt-8 flex items-center justify-center gap-4">
+                  <div class="flex gap-2">
+                    <button v-for="(_, i) in testimonialGroups" :key="i" @click="goToSlide(i)" class="group">
+                      <div :class="['h-2 rounded-full transition-all duration-300', currentSlide === i ? 'w-8 bg-blue-600' : 'w-2 bg-gray-300 hover:bg-gray-400']"></div>
+                    </button>
+                  </div>
+                  <span class="text-sm text-gray-500 font-medium">{{ currentSlide + 1 }} / {{ testimonialGroups.length }}</span>
                 </div>
               </div>
             </div>
-            <!-- Navigation dots -->
-            <div class="mt-8 flex items-center justify-center gap-4">
-              <div class="flex gap-2">
-                <button v-for="(_, i) in testimonialGroups" :key="i" @click="goToSlide(i)" class="group">
-                  <div :class="['h-2 rounded-full transition-all duration-300', currentSlide === i ? 'w-8 bg-blue-600' : 'w-2 bg-gray-300 hover:bg-gray-400']"></div>
-                </button>
+
+            <!-- Mobile View (Single Card) - visible only on mobile -->
+            <div class="md:hidden">
+              <div class="relative px-2">
+                <!-- Swipe hint (shows on first load) -->
+                <div v-if="showSwipeHint" class="absolute -top-6 right-4 text-xs text-gray-400 flex items-center gap-1 z-10">
+                  <span>Swipe →</span>
+                  <ChevronRightIcon class="w-3 h-3 animate-pulse" />
+                </div>
+
+                <!-- Mobile carousel with touch support -->
+                <div 
+                  class="overflow-hidden"
+                  @touchstart="handleTouchStart"
+                  @touchmove="handleTouchMove"
+                  @touchend="handleTouchEnd"
+                >
+                  <div
+                    class="flex transition-transform duration-300 ease-out"
+                    :style="{ transform: `translateX(-${mobileCurrentSlide * 100}%)` }">
+                    <div
+                      v-for="(review, index) in props.testimonials"
+                      :key="review.id"
+                      class="w-full flex-shrink-0 px-1">
+                      <TestimonialCard
+                        :review="review"
+                        :is-active="index === mobileCurrentSlide"
+                        class="h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mobile navigation -->
+                <div class="flex items-center justify-between mt-6">
+                  <!-- Mobile arrows -->
+                  <button
+                    @click="mobilePrevSlide"
+                    :disabled="mobileCurrentSlide === 0"
+                    class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                    <ChevronLeftIcon class="w-5 h-5" />
+                  </button>
+
+                  <!-- Mobile dots -->
+                  <div class="flex gap-2">
+                    <button 
+                      v-for="(_, index) in props.testimonials" 
+                      :key="index"
+                      @click="mobileGoToSlide(index)"
+                      class="transition-all duration-300"
+                      :class="[
+                        'h-2 rounded-full',
+                        mobileCurrentSlide === index 
+                          ? 'w-6 bg-blue-600' 
+                          : 'w-2 bg-gray-300 hover:bg-gray-400'
+                      ]"
+                      :aria-label="`Go to testimonial ${index + 1}`"
+                    />
+                  </div>
+
+                  <button
+                    @click="mobileNextSlide"
+                    :disabled="mobileCurrentSlide === props.testimonials.length - 1"
+                    class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                    <ChevronRightIcon class="w-5 h-5" />
+                  </button>
+                </div>
+
+                <!-- Mobile slide counter -->
+                <p class="text-center text-sm text-gray-500 mt-3">
+                  {{ mobileCurrentSlide + 1 }} / {{ props.testimonials.length }}
+                </p>
               </div>
-              <span class="text-sm text-gray-500 font-medium">{{ currentSlide + 1 }} / {{ testimonialGroups.length }}</span>
             </div>
           </div>
         </div>
@@ -786,8 +870,8 @@ onUnmounted(() => {
 const testimonialGroups = computed(() => {
   if (!props.testimonials?.length) return []
   const groups = []
-  for (let i = 0; i < props.testimonials.length; i += testimonialsPerPage) {
-    groups.push(props.testimonials.slice(i, i + testimonialsPerPage))
+  for (let i = 0; i < props.testimonials.length; i += 3) {
+    groups.push(props.testimonials.slice(i, i + 3))
   }
   return groups
 })
@@ -820,6 +904,100 @@ function trackCTA(label) {
     window.dataLayer.push({ event: 'cta_click', event_label: label })
   }
 }
+const mobileCurrentSlide = ref(0)
+const showSwipeHint = ref(true)
+
+// Touch handling for mobile
+const touchStartX = ref(0)
+const touchEndX = ref(0)
+const minSwipeDistance = 50
+
+// const isFirstSlide = computed(() => currentSlide.value === 0)
+// const isLastSlide = computed(() => currentSlide.value === testimonialGroups.value.length - 1)
+
+// // Desktop navigation methods (your existing code)
+// function nextSlide() { if (!isLastSlide.value) currentSlide.value++ }
+// function prevSlide() { if (!isFirstSlide.value) currentSlide.value-- }
+// function goToSlide(i) { currentSlide.value = i }
+
+// Mobile navigation methods
+function mobileNextSlide() {
+  if (mobileCurrentSlide.value < props.testimonials.length - 1) {
+    mobileCurrentSlide.value++
+  }
+}
+
+function mobilePrevSlide() {
+  if (mobileCurrentSlide.value > 0) {
+    mobileCurrentSlide.value--
+  }
+}
+
+function mobileGoToSlide(index) {
+  mobileCurrentSlide.value = index
+}
+
+// Touch handlers for mobile
+function handleTouchStart(e) {
+  touchStartX.value = e.touches[0].clientX
+  showSwipeHint.value = false // Hide hint after first interaction
+}
+
+function handleTouchMove(e) {
+  touchEndX.value = e.touches[0].clientX
+}
+
+function handleTouchEnd() {
+  const distance = touchStartX.value - touchEndX.value
+  
+  if (Math.abs(distance) > minSwipeDistance) {
+    if (distance > 0) {
+      // Swiped left - go to next
+      if (mobileCurrentSlide.value < props.testimonials.length - 1) {
+        mobileCurrentSlide.value++
+      }
+    } else {
+      // Swiped right - go to previous
+      if (mobileCurrentSlide.value > 0) {
+        mobileCurrentSlide.value--
+      }
+    }
+  }
+  
+  // Reset values
+  touchStartX.value = 0
+  touchEndX.value = 0
+}
+
+// Hide swipe hint after 5 seconds
+onMounted(() => {
+  const hintTimer = setTimeout(() => {
+    showSwipeHint.value = false
+  }, 5000)
+  
+  return () => clearTimeout(hintTimer)
+})
+
+// Auto-advance for mobile (optional)
+let mobileAutoAdvance
+onMounted(() => {
+  mobileAutoAdvance = setInterval(() => {
+    if (props.testimonials?.length > 0 && window.innerWidth < 768) {
+      if (mobileCurrentSlide.value < props.testimonials.length - 1) {
+        mobileCurrentSlide.value++
+      } else {
+        mobileCurrentSlide.value = 0 // Loop back to start
+      }
+    }
+  }, 5000)
+})
+
+onUnmounted(() => {
+  if (mobileAutoAdvance) {
+    clearInterval(mobileAutoAdvance)
+  }
+})
+
 </script>
 
 <style scoped>
