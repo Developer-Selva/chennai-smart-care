@@ -1022,13 +1022,18 @@ async function submitBooking() {
     bookingSuccess.value = true
     window.scrollTo({ top: 0, behavior: 'smooth' })
     
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'booking_completed',
-        booking_number: res.data.booking_number,
-        total_value: totalPrice.value,
-      })
-    }
+if (window.dataLayer) {
+  window.dataLayer.push({
+    event: 'booking_completed',
+    booking_number: res.data.booking_number,
+    total_value: totalPrice.value,
+    currency: 'INR',
+    service_count: form.value.services.length,
+    services: form.value.services.map(s => s.name).join(', '),
+    area: form.value.area || '',
+    booking_date: form.value.booking_date,
+  })
+}
   } catch (err) {
     if (err.response?.status === 422) {
       errors.value  = err.response.data.errors ?? {}
