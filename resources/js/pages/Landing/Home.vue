@@ -658,7 +658,7 @@
     </section>
 
     <!-- Emergency CTA (fixed) -->
-    <div class="fixed bottom-6 right-6 z-50 animate-bounce-slow">
+    <div class="fixed bottom-6 left-6 z-50 animate-bounce-slow">
       <a href="tel:+919444900470"
          class="flex items-center gap-2 bg-red-600 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all hover:bg-red-700">
         <PhoneIcon class="w-5 h-5 animate-pulse" />
