@@ -99,13 +99,13 @@ SESSION_DRIVER=redis
 QUEUE_CONNECTION=redis
 
 # Mail (use SES, Mailgun or SMTP)
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=465
-MAIL_USERNAME=chennaismartcarehomeservice@gmail.com
-MAIL_PASSWORD=fxixbuytkjjiydso
-MAIL_FROM_ADDRESS=chennaismartcarehomeservice@gmail.com
-MAIL_FROM_NAME="Chennai Smart Care"
+MAIL_MAILER=
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_FROM_ADDRESS=
+MAIL_FROM_NAME=
 
 # SMS (Twilio or MSG91)
 MSG91_API_KEY=your-msg91-key
